@@ -23,6 +23,7 @@ export default function useGameState() {
   const MAX_MONTHS = 3;
   const DAYS_IN_MONTH = 30;
   const INITIAL_SALARY = 5000;
+  const MAX_BALANCE = 5000;
 
   const [currentDay, setCurrentDay] = useState(1);
   const [currentMonth, setCurrentMonth] = useState(1);
@@ -33,8 +34,10 @@ export default function useGameState() {
   
   const calculateSalary = (daysWorked: number) => {
     if (daysWorked >= 20) return 5000;
+    if (daysWorked >= 15) return 3750;
     if (daysWorked >= 10) return 2500;
-    return 500;
+    if (daysWorked >= 5) return 1250;
+    return 0;
   };
 
   const resetWorkDays = () => setWorkDays(0);
@@ -53,6 +56,7 @@ export default function useGameState() {
     currentDay,
     currentMonth,
     balance,
+    MAX_BALANCE,
     stamina,
     history,
     workDays,

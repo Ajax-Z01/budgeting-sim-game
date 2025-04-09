@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { Button } from "flowbite-react";
-import { Choice } from "./GameState";
+import { Choice } from "../GameState";
 
 type Props = {
   choices: Choice[];
   onChoose: (selected: Choice[]) => void;
+  currentStamina: number;
 };
 
-export default function DailyChoices({ choices, onChoose }: Props) {
+export default function DailyChoices({ choices, onChoose, currentStamina }: Props) {
   const categories = Array.from(new Set(choices.map((c) => c.category)));
   const [selected, setSelected] = useState<Record<string, Choice>>({});
 
@@ -19,9 +20,18 @@ export default function DailyChoices({ choices, onChoose }: Props) {
         if (updated["Kegiatan"]?.label === "Bekerja") {
           delete updated["Kegiatan"];
         }
+        if (updated["Makan"]?.label === "Makan di luar") {
+          delete updated["Makan"];
+        }
       }
   
       if (choice.category === "Kegiatan" && choice.label === "Bekerja") {
+        if (updated["Transportasi"]?.label === "Tidak keluar rumah") {
+          delete updated["Transportasi"];
+        }
+      }
+  
+      if (choice.category === "Makan" && choice.label === "Makan di luar") {
         if (updated["Transportasi"]?.label === "Tidak keluar rumah") {
           delete updated["Transportasi"];
         }
@@ -41,6 +51,10 @@ export default function DailyChoices({ choices, onChoose }: Props) {
   };
 
   const isStayAtHome = selected["Transportasi"]?.label === "Tidak keluar rumah";
+  const selectedChoices = Object.values(selected);
+  const totalStaminaChange = selectedChoices.reduce((sum, c) => sum + c.staminaEffect, 0);
+  const willBeStamina = currentStamina + totalStaminaChange;
+  const isDisabled = selectedChoices.length !== categories.length || currentStamina <= 0 || willBeStamina < 0;
 
   return (
     <div className="mt-4 space-y-4">
@@ -54,7 +68,8 @@ export default function DailyChoices({ choices, onChoose }: Props) {
                 const isSelected = selected[cat]?.label === choice.label;
 
                 const isDisabled =
-                  isStayAtHome && cat === "Kegiatan" && choice.label === "Bekerja";
+                  isStayAtHome && cat === "Kegiatan" && choice.label === "Bekerja" ||
+                  isStayAtHome && cat === "Makan" && choice.label === "Makan di luar";
 
                 return (
                   <Button
@@ -72,7 +87,7 @@ export default function DailyChoices({ choices, onChoose }: Props) {
           </div>
         </div>
       ))}
-      <Button className="mt-4" onClick={handleConfirm}>
+      <Button className="mt-4" onClick={handleConfirm} disabled={isDisabled}>
         Konfirmasi Pilihan Hari Ini
       </Button>
     </div>

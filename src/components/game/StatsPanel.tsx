@@ -1,0 +1,39 @@
+import { Card } from "flowbite-react";
+import ProgressBar from "../ui/ProgressBar";
+
+type Props = {
+  month: number;
+  day: number;
+  balance: number;
+  stamina: number;
+  maxMonth: number;
+  maxBalance: number;
+  workDays: number;
+  nextSalary: number;
+};
+
+export default function StatsPanel({ month, day, balance, stamina, maxMonth, maxBalance, workDays, nextSalary }: Props) {
+  return (
+    <Card className="mb-4">
+      <h2 className="text-xl font-bold mb-2">📊 Status Pemain</h2>
+      <div className="grid grid-cols-2 gap-4 text-sm">
+        <div><span className="font-medium">Bulan:</span> {month} / {maxMonth}</div>
+        <div><span className="font-medium">Hari:</span> {day} / 30</div>
+        <div>
+          <span className="font-medium">Saldo:</span> ${balance}
+          <ProgressBar value={(balance / maxBalance) * 100} color="blue" />
+        </div>
+        <div>
+          <span className="font-medium">Stamina:</span> {stamina} / 100
+          <ProgressBar value={stamina} color="green" />
+        </div>
+        <div>
+          <span className="font-medium">Hari Bekerja:</span> {workDays} hari
+        </div>
+        <div>
+          <span className="font-medium">Gaji Bulan Ini:</span> ${nextSalary}
+        </div>
+      </div>
+    </Card>
+  );
+}

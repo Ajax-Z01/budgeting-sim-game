@@ -1,7 +1,7 @@
 "use client";
 
-import GameController from "@/components/GameController";
-import GameSummary from "@/components/GameSummary";
+import GameController from "@/components/game/GameController";
+import GameSummary from "@/components/game/GameSummary";
 
 export default function GamePage() {
   return (
