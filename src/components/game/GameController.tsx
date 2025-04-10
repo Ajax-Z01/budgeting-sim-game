@@ -1,25 +1,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import useGameState, { Choice, DailyRecord } from "./GameState";
+import { useGameStore } from "@/store/GameStore";
+import { Choice, DailyRecord } from "@/store/GameTypes";
 import DailyChoices from "./elements/DailyChoices";
 import GameOverScreen from "./screens/GameOverScreen";
-import GameFinishedScreen from "./screens/GameFinishedScreen";
 import StatsPanel from "./StatsPanel";
 import ToastNotification from "../ui/ToastNotification";
+import GameFinishedScreen from "./screens/GameFinishedScreen";
 
 const dailyOptions: Choice[] = [
-  // Makan
   { category: "Makan", label: "Masak sendiri", amount: 100, staminaEffect: 5 },
   { category: "Makan", label: "Makan di luar", amount: 300, staminaEffect: 10 },
-
-  // Transportasi
   { category: "Transportasi", label: "Tidak keluar rumah", amount: 0, staminaEffect: 0 },
   { category: "Transportasi", label: "Jalan kaki", amount: 0, staminaEffect: -10 },
   { category: "Transportasi", label: "Naik motor", amount: 100, staminaEffect: -5 },
   { category: "Transportasi", label: "Naik taksi", amount: 300, staminaEffect: 5 },
-
-  // Kegiatan
   { category: "Kegiatan", label: "Istirahat", amount: 0, staminaEffect: 30 },
   { category: "Kegiatan", label: "Belajar", amount: 0, staminaEffect: -10 },
   { category: "Kegiatan", label: "Bekerja", amount: 0, staminaEffect: -15 },
@@ -35,24 +31,31 @@ export default function GameController() {
     MAX_BALANCE,
     stamina,
     history,
+    workDays,
+    nextSalary,
+    isGameOver,
+    gameOverReason,
+    payNotification,
+    staminaWarning,
+    balanceWarning,
     setCurrentDay,
     setCurrentMonth,
     setBalance,
     setStamina,
-    setHistory,
-    workDays,
+    addToHistory,
     setWorkDays,
+    setTotalWorkDays,
     calculateSalary,
+    updateMaxBalance,
     resetWorkDays,
-  } = useGameState();  
+    setGameOverReason,
+    clearNotifications,
+    setPayNotification,
+    setStaminaWarning,
+    setBalanceWarning,
+  } = useGameStore();
 
   const [todayChoices, setTodayChoices] = useState<Choice[]>([]);
-  const [staminaWarning, setStaminaWarning] = useState<string | null>(null);
-  const [balanceWarning, setBalanceWarning] = useState<string | null>(null);
-  const [gameOverReason, setGameOverReason] = useState<"balance" | "stamina" | null>(null);
-  const [payNotification, setPayNotification] = useState<string | null>(null);
-  const nextSalary = calculateSalary(workDays);
-  const isGameOver = gameOverReason !== null;
 
   useEffect(() => {
     const categories = Array.from(new Set(dailyOptions.map((opt) => opt.category)));
@@ -65,10 +68,10 @@ export default function GameController() {
   const handleConfirmChoices = (selectedChoices: Choice[]) => {
     const totalCost = selectedChoices.reduce((sum, choice) => sum + choice.amount, 0);
     const totalStamina = selectedChoices.reduce((sum, choice) => sum + choice.staminaEffect, 0);
-  
+
     const newBalance = balance - totalCost;
     const newStamina = Math.min(100, Math.max(0, stamina + totalStamina));
-  
+
     if (newStamina <= 30 && newStamina > 0) {
       setStaminaWarning("⚠️ Stamina kamu rendah, pertimbangkan untuk istirahat besok.");
     } else if (newStamina === 0) {
@@ -76,23 +79,23 @@ export default function GameController() {
     } else {
       setStaminaWarning(null);
     }
-    
+
     if (newBalance < 300) {
       setBalanceWarning("⚠️ Saldo kamu menipis, hati-hati dalam mengambil pilihan.");
     } else {
       setBalanceWarning(null);
     }
-    
+
     if (newBalance <= 0) {
       setGameOverReason("balance");
       return;
     }
-    
+
     if (newStamina <= 0) {
       setGameOverReason("stamina");
       return;
     }
-    
+
     const record: DailyRecord = {
       day: currentDay,
       month: currentMonth,
@@ -102,58 +105,43 @@ export default function GameController() {
       staminaBefore: stamina,
       staminaAfter: newStamina,
     };
-  
+
     setBalance(newBalance);
     setStamina(newStamina);
-    setHistory([...history, record]);
-    
+    addToHistory(record);
+
     const workedToday = selectedChoices.some((choice) => choice.label === "Bekerja");
     if (workedToday) {
       setWorkDays(workDays + 1);
+      useGameStore.getState().setTotalWorkDays(useGameStore.getState().totalWorkDays + 1);
     }
-  
+
     if (currentDay >= DAYS_IN_MONTH) {
       const salary = calculateSalary(workDays);
-      setBalance((prev) => prev + salary);
+      setBalance((prev: number) => prev + salary);
+      updateMaxBalance();
       setPayNotification(`💼 Kamu menerima gaji sebesar $${salary}!`);
       resetWorkDays();
-      
       setCurrentDay(1);
-      setCurrentMonth((prev) => prev + 1);
+      setCurrentMonth(currentMonth + 1);
     } else {
-      setCurrentDay((prev) => prev + 1);
-    }    
+      setCurrentDay(currentDay + 1);
+    }
   };
-  
+
   useEffect(() => {
-    if (payNotification) {
-      const timer = setTimeout(() => setPayNotification(null), 4000);
-      return () => clearTimeout(timer);
-    }
-  }, [payNotification]);
-  
-  useEffect(() => {
-    if (staminaWarning) {
-      const timer = setTimeout(() => setStaminaWarning(null), 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [staminaWarning]);
-  
-  useEffect(() => {
-    if (balanceWarning) {
-      const timer = setTimeout(() => setBalanceWarning(null), 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [balanceWarning]);  
-  
+    const timer = setTimeout(() => clearNotifications(), 5000);
+    return () => clearTimeout(timer);
+  }, [payNotification, staminaWarning, balanceWarning]);
+
   if (currentMonth > MAX_MONTHS) {
     return <GameFinishedScreen />;
   }
-  
+
   if (isGameOver) {
     return <GameOverScreen reason={gameOverReason} />;
   }
-  
+
   return (
     <div className="mt-6">
       <div className="fixed bottom-4 right-4 space-y-2 z-50">
@@ -167,10 +155,11 @@ export default function GameController() {
           <ToastNotification message={balanceWarning} type="error" />
         )}
       </div>
-            
+
       <StatsPanel
         month={currentMonth}
         day={currentDay}
+        days_in_month={DAYS_IN_MONTH}
         balance={balance}
         stamina={stamina}
         maxMonth={MAX_MONTHS}
@@ -178,7 +167,7 @@ export default function GameController() {
         workDays={workDays}
         nextSalary={nextSalary}
       />
-      
+
       <DailyChoices
         choices={todayChoices}
         onChoose={handleConfirmChoices}

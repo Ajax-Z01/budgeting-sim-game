@@ -1,45 +1,37 @@
 import { useState } from "react";
 import { Button } from "flowbite-react";
-import { Choice } from "../GameState";
+import { Choice } from "@/store/GameTypes";
 
-type Props = {
+type DailyChoicesProps = {
   choices: Choice[];
-  onChoose: (selected: Choice[]) => void;
+  onChoose: (selectedChoices: Choice[]) => void;
   currentStamina: number;
 };
 
-export default function DailyChoices({ choices, onChoose, currentStamina }: Props) {
+export default function DailyChoices({ choices, onChoose, currentStamina }: DailyChoicesProps) {
   const categories = Array.from(new Set(choices.map((c) => c.category)));
   const [selected, setSelected] = useState<Record<string, Choice>>({});
 
   const handleSelect = (choice: Choice) => {
     setSelected((prev) => {
       const updated = { ...prev, [choice.category]: choice };
-  
+
       if (choice.category === "Transportasi" && choice.label === "Tidak keluar rumah") {
-        if (updated["Kegiatan"]?.label === "Bekerja") {
-          delete updated["Kegiatan"];
-        }
-        if (updated["Makan"]?.label === "Makan di luar") {
-          delete updated["Makan"];
-        }
+        if (updated["Kegiatan"]?.label === "Bekerja") delete updated["Kegiatan"];
+        if (updated["Makan"]?.label === "Makan di luar") delete updated["Makan"];
       }
-  
+
       if (choice.category === "Kegiatan" && choice.label === "Bekerja") {
-        if (updated["Transportasi"]?.label === "Tidak keluar rumah") {
-          delete updated["Transportasi"];
-        }
+        if (updated["Transportasi"]?.label === "Tidak keluar rumah") delete updated["Transportasi"];
       }
-  
+
       if (choice.category === "Makan" && choice.label === "Makan di luar") {
-        if (updated["Transportasi"]?.label === "Tidak keluar rumah") {
-          delete updated["Transportasi"];
-        }
+        if (updated["Transportasi"]?.label === "Tidak keluar rumah") delete updated["Transportasi"];
       }
-  
+
       return updated;
     });
-  };  
+  };
 
   const handleConfirm = () => {
     const selectedChoices = Object.values(selected);
@@ -54,7 +46,10 @@ export default function DailyChoices({ choices, onChoose, currentStamina }: Prop
   const selectedChoices = Object.values(selected);
   const totalStaminaChange = selectedChoices.reduce((sum, c) => sum + c.staminaEffect, 0);
   const willBeStamina = currentStamina + totalStaminaChange;
-  const isDisabled = selectedChoices.length !== categories.length || currentStamina <= 0 || willBeStamina < 0;
+  const isConfirmDisabled =
+    selectedChoices.length !== categories.length ||
+    currentStamina <= 0 ||
+    willBeStamina < 0;
 
   return (
     <div className="mt-4 space-y-4">
@@ -67,16 +62,16 @@ export default function DailyChoices({ choices, onChoose, currentStamina }: Prop
               .map((choice, idx) => {
                 const isSelected = selected[cat]?.label === choice.label;
 
-                const isDisabled =
-                  isStayAtHome && cat === "Kegiatan" && choice.label === "Bekerja" ||
-                  isStayAtHome && cat === "Makan" && choice.label === "Makan di luar";
+                const isChoiceDisabled =
+                  (isStayAtHome && cat === "Kegiatan" && choice.label === "Bekerja") ||
+                  (isStayAtHome && cat === "Makan" && choice.label === "Makan di luar");
 
                 return (
                   <Button
                     key={idx}
                     color={isSelected ? "green" : "light"}
                     onClick={() => handleSelect(choice)}
-                    disabled={isDisabled}
+                    disabled={isChoiceDisabled}
                   >
                     {choice.label} (${choice.amount}) | Stamina{" "}
                     {choice.staminaEffect >= 0 ? "+" : ""}
@@ -87,7 +82,8 @@ export default function DailyChoices({ choices, onChoose, currentStamina }: Prop
           </div>
         </div>
       ))}
-      <Button className="mt-4" onClick={handleConfirm} disabled={isDisabled}>
+
+      <Button className="mt-4" onClick={handleConfirm} disabled={isConfirmDisabled}>
         Konfirmasi Pilihan Hari Ini
       </Button>
     </div>

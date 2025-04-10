@@ -1,12 +1,15 @@
 "use client";
 
 import { Button } from "flowbite-react";
+import { GameOverReason } from "@/store/GameTypes";
 
 type Props = {
-  reason: "balance" | "stamina";
+  reason: GameOverReason;
 };
 
 export default function GameOverScreen({ reason }: Props) {
+  if (!reason) return null;
+
   const reasonText =
     reason === "balance"
       ? "💸 Saldo kamu habis."

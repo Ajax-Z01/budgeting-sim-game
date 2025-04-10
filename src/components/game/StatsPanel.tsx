@@ -4,6 +4,7 @@ import ProgressBar from "../ui/ProgressBar";
 type Props = {
   month: number;
   day: number;
+  days_in_month: number;
   balance: number;
   stamina: number;
   maxMonth: number;
@@ -12,13 +13,13 @@ type Props = {
   nextSalary: number;
 };
 
-export default function StatsPanel({ month, day, balance, stamina, maxMonth, maxBalance, workDays, nextSalary }: Props) {
+export default function StatsPanel({ month, day, days_in_month, balance, stamina, maxMonth, maxBalance, workDays, nextSalary }: Props) {
   return (
     <Card className="mb-4">
       <h2 className="text-xl font-bold mb-2">📊 Status Pemain</h2>
       <div className="grid grid-cols-2 gap-4 text-sm">
         <div><span className="font-medium">Bulan:</span> {month} / {maxMonth}</div>
-        <div><span className="font-medium">Hari:</span> {day} / 30</div>
+        <div><span className="font-medium">Hari:</span> {day} / {days_in_month}</div>
         <div>
           <span className="font-medium">Saldo:</span> ${balance}
           <ProgressBar value={(balance / maxBalance) * 100} color="blue" />
