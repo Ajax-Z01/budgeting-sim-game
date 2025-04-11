@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "flowbite-react";
-import { Choice } from "@/store/GameTypes";
+import { Choice } from "@/stores/GameTypes";
 
 type DailyChoicesProps = {
   choices: Choice[];
@@ -39,17 +39,22 @@ export default function DailyChoices({ choices, onChoose, currentStamina }: Dail
       alert("Pilih satu opsi dari tiap kategori.");
       return;
     }
+  
+    const totalStaminaChange = selectedChoices.reduce((sum, c) => sum + c.staminaEffect, 0);
+    const willBeStamina = currentStamina + totalStaminaChange;
+  
+    if (willBeStamina <= 0) {
+      console.log("Stamina akan habis, trigger game over dari parent.");
+    }
+  
     onChoose(selectedChoices);
   };
+  
 
   const isStayAtHome = selected["Transportasi"]?.label === "Tidak keluar rumah";
   const selectedChoices = Object.values(selected);
   const totalStaminaChange = selectedChoices.reduce((sum, c) => sum + c.staminaEffect, 0);
   const willBeStamina = currentStamina + totalStaminaChange;
-  const isConfirmDisabled =
-    selectedChoices.length !== categories.length ||
-    currentStamina <= 0 ||
-    willBeStamina < 0;
 
   return (
     <div className="mt-4 space-y-4">
@@ -83,7 +88,7 @@ export default function DailyChoices({ choices, onChoose, currentStamina }: Dail
         </div>
       ))}
 
-      <Button className="mt-4" onClick={handleConfirm} disabled={isConfirmDisabled}>
+      <Button className="mt-4" onClick={handleConfirm}>
         Konfirmasi Pilihan Hari Ini
       </Button>
     </div>

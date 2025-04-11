@@ -13,7 +13,25 @@ type Props = {
   nextSalary: number;
 };
 
-export default function StatsPanel({ month, day, days_in_month, balance, stamina, maxMonth, maxBalance, workDays, nextSalary }: Props) {
+function getBarColor(value: number): "green" | "yellow" | "red" {
+  if (value > 60) return "green";
+  if (value > 30) return "yellow";
+  return "red";
+}
+
+export default function StatsPanel({
+  month,
+  day,
+  days_in_month,
+  balance,
+  stamina,
+  maxMonth,
+  maxBalance,
+  workDays,
+  nextSalary,
+}: Props) {
+  const balancePercent = (balance / maxBalance) * 100;
+
   return (
     <Card className="mb-4">
       <h2 className="text-xl font-bold mb-2">📊 Status Pemain</h2>
@@ -22,11 +40,11 @@ export default function StatsPanel({ month, day, days_in_month, balance, stamina
         <div><span className="font-medium">Hari:</span> {day} / {days_in_month}</div>
         <div>
           <span className="font-medium">Saldo:</span> ${balance}
-          <ProgressBar value={(balance / maxBalance) * 100} color="blue" />
+          <ProgressBar value={balancePercent} color={getBarColor(balancePercent)} />
         </div>
         <div>
           <span className="font-medium">Stamina:</span> {stamina} / 100
-          <ProgressBar value={stamina} color="green" />
+          <ProgressBar value={stamina} color={getBarColor(stamina)} />
         </div>
         <div>
           <span className="font-medium">Hari Bekerja:</span> {workDays} hari

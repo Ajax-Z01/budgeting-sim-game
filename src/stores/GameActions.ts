@@ -15,6 +15,7 @@ export const createGameActions: StateCreator<GameState, [], [], Partial<GameStat
   setPayNotification: (msg) => set({ payNotification: msg }),
   setStaminaWarning: (msg) => set({ staminaWarning: msg }),
   setBalanceWarning: (msg) => set({ balanceWarning: msg }),
+  setIsGameOver: (value: boolean) => set({ isGameOver: value }),
 
   addToHistory: (record) =>
     set((state) => ({

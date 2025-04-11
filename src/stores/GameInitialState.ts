@@ -13,7 +13,7 @@ export const initialState: GameState = {
   staminaWarning: null,
   balanceWarning: null,
   MAX_MONTHS: 3,
-  DAYS_IN_MONTH: 5,
+  DAYS_IN_MONTH: 30,
   MAX_BALANCE: 5000,
   nextSalary: 0,
   isGameOver: false,

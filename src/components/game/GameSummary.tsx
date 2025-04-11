@@ -1,6 +1,6 @@
 "use client";
 
-import { useGameStore } from "@/store/GameStore";
+import { useGameStore } from "@/stores/GameStore";
 
 export default function GameSummary() {
   const {

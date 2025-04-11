@@ -48,6 +48,7 @@ export type GameState = {
   setWorkDays: (days: number) => void;
   setTotalWorkDays: (days: number) => void;
   setGameOverReason: (reason: GameOverReason) => void;
+  setIsGameOver: (value: boolean) => void;
   setPayNotification: (msg: string | null) => void;
   setStaminaWarning: (msg: string | null) => void;
   setBalanceWarning: (msg: string | null) => void;

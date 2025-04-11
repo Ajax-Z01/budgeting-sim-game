@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useGameStore } from "@/store/GameStore";
+import { useGameStore } from "@/stores/GameStore";
 
 export default function FinalReportScreen() {
   const { history, balance, stamina, totalWorkDays } = useGameStore();

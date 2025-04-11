@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useGameStore } from "@/store/GameStore";
-import { Choice, DailyRecord } from "@/store/GameTypes";
+import { useEffect, useRef, useState } from "react";
+import { useGameStore } from "@/stores/GameStore";
+import { Choice, DailyRecord } from "@/stores/GameTypes";
 import DailyChoices from "./elements/DailyChoices";
 import GameOverScreen from "./screens/GameOverScreen";
 import StatsPanel from "./StatsPanel";
@@ -56,6 +56,8 @@ export default function GameController() {
   } = useGameStore();
 
   const [todayChoices, setTodayChoices] = useState<Choice[]>([]);
+  const warningAudioRef = useRef<HTMLAudioElement>(null);
+  const salaryAudioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     const categories = Array.from(new Set(dailyOptions.map((opt) => opt.category)));
@@ -88,11 +90,13 @@ export default function GameController() {
 
     if (newBalance <= 0) {
       setGameOverReason("balance");
+      useGameStore.getState().setIsGameOver(true);
       return;
     }
 
     if (newStamina <= 0) {
       setGameOverReason("stamina");
+      useGameStore.getState().setIsGameOver(true);
       return;
     }
 
@@ -128,16 +132,28 @@ export default function GameController() {
       setCurrentDay(currentDay + 1);
     }
   };
-
+  
   useEffect(() => {
     const timer = setTimeout(() => clearNotifications(), 5000);
     return () => clearTimeout(timer);
   }, [payNotification, staminaWarning, balanceWarning]);
-
+  
+  useEffect(() => {
+    if (payNotification) {
+      salaryAudioRef.current?.play().catch(() => {});
+    }
+  }, [payNotification]);
+  
+  useEffect(() => {
+    if (staminaWarning) {
+      warningAudioRef.current?.play().catch(() => {});
+    }
+  }, [staminaWarning]);
+  
   if (currentMonth > MAX_MONTHS) {
     return <GameFinishedScreen />;
   }
-
+  
   if (isGameOver) {
     return <GameOverScreen reason={gameOverReason} />;
   }
@@ -173,6 +189,8 @@ export default function GameController() {
         onChoose={handleConfirmChoices}
         currentStamina={stamina}
       />
+      <audio ref={warningAudioRef} src="/sounds/warning.mp3" preload="auto" />
+      <audio ref={salaryAudioRef} src="/sounds/salary.mp3" preload="auto" />
     </div>
   );
 }
