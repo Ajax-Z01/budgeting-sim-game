@@ -1,28 +1,27 @@
 "use client";
 
-import { useRef } from "react";
+import { forwardRef, useImperativeHandle, useRef } from "react";
 
 type Props = {
   src: string;
 };
 
-export default function SoundEffect({ src }: Props) {
+export type SoundEffectHandle = {
+  play: () => void;
+};
+
+const SoundEffect = forwardRef<SoundEffectHandle, Props>(({ src }, ref) => {
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  const play = () => {
-    audioRef.current?.play().catch((e) => {
-      console.warn("Sound effect blocked:", e);
-    });
-  };
+  useImperativeHandle(ref, () => ({
+    play() {
+      audioRef.current?.play().catch((e) => {
+        console.warn("Sound effect blocked:", e);
+      });
+    },
+  }));
 
-  return (
-    <>
-      <audio ref={audioRef} src={src} />
-      <button
-        onClick={play}
-        style={{ display: "none" }}
-        aria-hidden="true"
-      />
-    </>
-  );
-}
+  return <audio ref={audioRef} src={src} preload="auto" />;
+});
+
+export default SoundEffect;

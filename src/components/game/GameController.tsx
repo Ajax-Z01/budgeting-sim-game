@@ -8,6 +8,7 @@ import GameOverScreen from "./screens/GameOverScreen";
 import StatsPanel from "./StatsPanel";
 import ToastNotification from "../ui/ToastNotification";
 import GameFinishedScreen from "./screens/GameFinishedScreen";
+import SoundEffect, { SoundEffectHandle } from "../sound/SoundEffect";
 
 const dailyOptions: Choice[] = [
   { category: "Makan", label: "Masak sendiri", amount: 100, staminaEffect: 5 },
@@ -56,8 +57,8 @@ export default function GameController() {
   } = useGameStore();
 
   const [todayChoices, setTodayChoices] = useState<Choice[]>([]);
-  const warningAudioRef = useRef<HTMLAudioElement>(null);
-  const salaryAudioRef = useRef<HTMLAudioElement>(null);
+  const warningAudioRef = useRef<SoundEffectHandle>(null);
+  const salaryAudioRef = useRef<SoundEffectHandle>(null);
 
   useEffect(() => {
     const categories = Array.from(new Set(dailyOptions.map((opt) => opt.category)));
@@ -140,13 +141,13 @@ export default function GameController() {
   
   useEffect(() => {
     if (payNotification) {
-      salaryAudioRef.current?.play().catch(() => {});
+      salaryAudioRef.current?.play();
     }
   }, [payNotification]);
   
   useEffect(() => {
     if (staminaWarning) {
-      warningAudioRef.current?.play().catch(() => {});
+      warningAudioRef.current?.play();
     }
   }, [staminaWarning]);
   
@@ -189,8 +190,8 @@ export default function GameController() {
         onChoose={handleConfirmChoices}
         currentStamina={stamina}
       />
-      <audio ref={warningAudioRef} src="/sounds/warning.mp3" preload="auto" />
-      <audio ref={salaryAudioRef} src="/sounds/salary.mp3" preload="auto" />
+      <SoundEffect ref={warningAudioRef} src="/sounds/warning.mp3" />
+      <SoundEffect ref={salaryAudioRef} src="/sounds/salary.mp3" />
     </div>
   );
 }

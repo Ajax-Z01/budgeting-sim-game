@@ -2,6 +2,7 @@
 
 import { Button } from "flowbite-react";
 import { GameOverReason } from "@/stores/GameTypes";
+import FinalReportScreen from "./FinalReportScreen";
 
 type Props = {
   reason: GameOverReason;
@@ -20,7 +21,8 @@ export default function GameOverScreen({ reason }: Props) {
       <h2 className="text-2xl font-bold text-red-600">💀 Game Over!</h2>
       <p className="mt-2">{reasonText}</p>
       <p className="mt-1">Coba lagi dan kelola hidupmu dengan lebih bijak!</p>
-      <Button className="mt-4" onClick={() => window.location.reload()}>
+      <FinalReportScreen />
+      <Button className="mt-4 cursor-pointer" onClick={() => window.location.reload()}>
         🔄 Mulai Ulang
       </Button>
     </div>

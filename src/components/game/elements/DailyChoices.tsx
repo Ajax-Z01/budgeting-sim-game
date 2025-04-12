@@ -1,6 +1,9 @@
-import { useState } from "react";
+"use client";
+
+import { useRef, useState } from "react";
 import { Button } from "flowbite-react";
 import { Choice } from "@/stores/GameTypes";
+import SoundEffect, { SoundEffectHandle } from "@/components/sound/SoundEffect";
 
 type DailyChoicesProps = {
   choices: Choice[];
@@ -12,7 +15,12 @@ export default function DailyChoices({ choices, onChoose, currentStamina }: Dail
   const categories = Array.from(new Set(choices.map((c) => c.category)));
   const [selected, setSelected] = useState<Record<string, Choice>>({});
 
+  const clickSoundRef = useRef<SoundEffectHandle>(null);
+  const confirmSoundRef = useRef<SoundEffectHandle>(null);
+
   const handleSelect = (choice: Choice) => {
+    clickSoundRef.current?.play();
+
     setSelected((prev) => {
       const updated = { ...prev, [choice.category]: choice };
 
@@ -39,17 +47,17 @@ export default function DailyChoices({ choices, onChoose, currentStamina }: Dail
       alert("Pilih satu opsi dari tiap kategori.");
       return;
     }
-  
+
     const totalStaminaChange = selectedChoices.reduce((sum, c) => sum + c.staminaEffect, 0);
     const willBeStamina = currentStamina + totalStaminaChange;
-  
+
     if (willBeStamina <= 0) {
       console.log("Stamina akan habis, trigger game over dari parent.");
     }
-  
+
+    confirmSoundRef.current?.play();
     onChoose(selectedChoices);
   };
-  
 
   const isStayAtHome = selected["Transportasi"]?.label === "Tidak keluar rumah";
   const selectedChoices = Object.values(selected);
@@ -77,6 +85,7 @@ export default function DailyChoices({ choices, onChoose, currentStamina }: Dail
                     color={isSelected ? "green" : "light"}
                     onClick={() => handleSelect(choice)}
                     disabled={isChoiceDisabled}
+                    className="cursor-pointer"
                   >
                     {choice.label} (${choice.amount}) | Stamina{" "}
                     {choice.staminaEffect >= 0 ? "+" : ""}
@@ -88,9 +97,12 @@ export default function DailyChoices({ choices, onChoose, currentStamina }: Dail
         </div>
       ))}
 
-      <Button className="mt-4" onClick={handleConfirm}>
+      <Button className="mt-4 cursor-pointer" onClick={handleConfirm}>
         Konfirmasi Pilihan Hari Ini
       </Button>
+
+      <SoundEffect ref={clickSoundRef} src="/sounds/click.mp3" />
+      <SoundEffect ref={confirmSoundRef} src="/sounds/confirm.mp3" />
     </div>
   );
 }
