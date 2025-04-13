@@ -13,7 +13,7 @@ import SoundEffect, { SoundEffectHandle } from "../sound/SoundEffect";
 const dailyOptions: Choice[] = [
   { category: "Makan", label: "Masak sendiri", amount: 100, staminaEffect: 5 },
   { category: "Makan", label: "Makan di luar", amount: 300, staminaEffect: 10 },
-  { category: "Transportasi", label: "Tidak keluar rumah", amount: 0, staminaEffect: 0 },
+  { category: "Transportasi", label: "Tidak keluar", amount: 0, staminaEffect: 0 },
   { category: "Transportasi", label: "Jalan kaki", amount: 0, staminaEffect: -10 },
   { category: "Transportasi", label: "Naik motor", amount: 100, staminaEffect: -5 },
   { category: "Transportasi", label: "Naik taksi", amount: 300, staminaEffect: 5 },
@@ -172,7 +172,7 @@ export default function GameController() {
           <ToastNotification message={balanceWarning} type="error" />
         )}
       </div>
-
+      
       <StatsPanel
         month={currentMonth}
         day={currentDay}
