@@ -4,15 +4,16 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 
 type Props = {
+  gender: 'male' | 'female' | null;
   stamina: number;
 };
 
-export default function CharacterAvatar({ stamina }: Props) {
-  let avatar = "/avatar/male-happy.svg";
+export default function CharacterAvatar({ gender, stamina }: Props) {
+  let avatar = gender === 'male' ? "/avatar/male-happy.svg" : "/avatar/female-happy.svg";
 
-  if (stamina <= 20) avatar = "/avatar/male-angry.svg";
-  else if (stamina <= 40) avatar = "/avatar/male-sad.svg";
-  else if (stamina <= 70) avatar = "/avatar/male-normal.svg";
+  if (stamina <= 20) avatar = gender === 'male' ? "/avatar/male-angry.svg" : "/avatar/female-angry.svg";
+  else if (stamina <= 40) avatar = gender === 'male' ? "/avatar/male-sad.svg" : "/avatar/female-sad.svg";
+  else if (stamina <= 70) avatar = gender === 'male' ? "/avatar/male-normal.svg" : "/avatar/female-normal.svg";
 
   return (
     <div className="w-20 h-20 animate-fade-in">

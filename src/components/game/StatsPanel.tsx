@@ -14,6 +14,7 @@ type Props = {
   maxBalance: number;
   workDays: number;
   nextSalary: number;
+  gender: 'male' | 'female';
 };
 
 function getBarColor(value: number): "green" | "yellow" | "red" {
@@ -32,6 +33,7 @@ export default function StatsPanel({
   maxBalance,
   workDays,
   nextSalary,
+  gender,
 }: Props) {
   const balancePercent = (balance / maxBalance) * 100;
 
@@ -39,7 +41,7 @@ export default function StatsPanel({
     <Card className="mb-4">
       <div className="flex items-center gap-4 mb-4 justify-between">
         <h2 className="text-xl font-bold">📊 Status Pemain</h2>
-        <CharacterAvatar stamina={stamina} />
+        <CharacterAvatar stamina={stamina} gender={gender} />
       </div>
       <div className="grid grid-cols-2 gap-4 text-sm">
         <div><span className="font-medium">Bulan:</span> {month} / {maxMonth}</div>
@@ -57,6 +59,9 @@ export default function StatsPanel({
         </div>
         <div>
           <span className="font-medium">Gaji Bulan Ini:</span> ${nextSalary}
+        </div>
+        <div>
+          <span className="font-medium">Gender:</span> {gender === 'male' ? 'Male' : 'Female'}
         </div>
       </div>
     </Card>

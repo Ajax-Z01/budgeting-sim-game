@@ -24,6 +24,9 @@ const dailyOptions: Choice[] = [
 
 export default function GameController() {
   const {
+    selectedCharacter,
+    selectedJob,
+    selectedCharacterGender,
     currentDay,
     currentMonth,
     MAX_MONTHS,
@@ -39,6 +42,7 @@ export default function GameController() {
     payNotification,
     staminaWarning,
     balanceWarning,
+    getSelectedCharacter,
     setCurrentDay,
     setCurrentMonth,
     setBalance,
@@ -59,6 +63,8 @@ export default function GameController() {
   const [todayChoices, setTodayChoices] = useState<Choice[]>([]);
   const warningAudioRef = useRef<SoundEffectHandle>(null);
   const salaryAudioRef = useRef<SoundEffectHandle>(null);
+  
+  console.log("selectedCharacterData", );
 
   useEffect(() => {
     const categories = Array.from(new Set(dailyOptions.map((opt) => opt.category)));
@@ -183,6 +189,7 @@ export default function GameController() {
         maxBalance={MAX_BALANCE}
         workDays={workDays}
         nextSalary={nextSalary}
+        gender={selectedCharacterGender}
       />
 
       <DailyChoices
