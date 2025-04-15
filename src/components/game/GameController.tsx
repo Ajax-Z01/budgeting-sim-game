@@ -9,18 +9,7 @@ import StatsPanel from "./StatsPanel";
 import ToastNotification from "../ui/ToastNotification";
 import GameFinishedScreen from "./screens/GameFinishedScreen";
 import SoundEffect, { SoundEffectHandle } from "../sound/SoundEffect";
-
-const dailyOptions: Choice[] = [
-  { category: "Makan", label: "Masak sendiri", amount: 100, staminaEffect: 5 },
-  { category: "Makan", label: "Makan di luar", amount: 300, staminaEffect: 10 },
-  { category: "Transportasi", label: "Tidak keluar", amount: 0, staminaEffect: 0 },
-  { category: "Transportasi", label: "Jalan kaki", amount: 0, staminaEffect: -10 },
-  { category: "Transportasi", label: "Naik motor", amount: 100, staminaEffect: -5 },
-  { category: "Transportasi", label: "Naik taksi", amount: 300, staminaEffect: 5 },
-  { category: "Kegiatan", label: "Istirahat", amount: 0, staminaEffect: 30 },
-  { category: "Kegiatan", label: "Belajar", amount: 0, staminaEffect: -10 },
-  { category: "Kegiatan", label: "Bekerja", amount: 0, staminaEffect: -15 },
-];
+import { dailyOptions } from "@/stores/GameInitialState";
 
 export default function GameController() {
   const {
@@ -33,24 +22,24 @@ export default function GameController() {
     DAYS_IN_MONTH,
     balance,
     MAX_BALANCE,
+    MAX_STAMINA,
     stamina,
-    history,
     workDays,
-    nextSalary,
     isGameOver,
     gameOverReason,
     payNotification,
     staminaWarning,
     balanceWarning,
-    getSelectedCharacter,
+    consumeStamina,
+    regenerateStamina,
+    getNextSalary,
     setCurrentDay,
     setCurrentMonth,
     setBalance,
     setStamina,
     addToHistory,
     setWorkDays,
-    setTotalWorkDays,
-    calculateSalary,
+    setNextSalary,
     updateMaxBalance,
     resetWorkDays,
     setGameOverReason,
@@ -61,35 +50,40 @@ export default function GameController() {
   } = useGameStore();
 
   const [todayChoices, setTodayChoices] = useState<Choice[]>([]);
+  const nextSalary = useGameStore((state) => state.nextSalary);
   const warningAudioRef = useRef<SoundEffectHandle>(null);
   const salaryAudioRef = useRef<SoundEffectHandle>(null);
-  
-  console.log("selectedCharacterData", );
-
-  useEffect(() => {
-    const categories = Array.from(new Set(dailyOptions.map((opt) => opt.category)));
-    const today: Choice[] = categories.flatMap((cat) =>
-      dailyOptions.filter((opt) => opt.category === cat)
-    );
-    setTodayChoices(today);
-  }, [currentDay]);
-
   const handleConfirmChoices = (selectedChoices: Choice[]) => {
     const totalCost = selectedChoices.reduce((sum, choice) => sum + choice.amount, 0);
-    const totalStamina = selectedChoices.reduce((sum, choice) => sum + choice.staminaEffect, 0);
-
     const newBalance = balance - totalCost;
-    const newStamina = Math.min(100, Math.max(0, stamina + totalStamina));
+    let newStamina = stamina;
 
-    if (newStamina <= 30 && newStamina > 0) {
+    selectedChoices.forEach((choice) => {
+      if (choice.staminaEffect < 0) {
+        const used = consumeStamina(Math.abs(choice.staminaEffect));
+        newStamina -= used;
+      } else if (choice.staminaEffect > 0) {
+        const gained = regenerateStamina(choice.staminaEffect);
+        newStamina += gained;
+      }
+    });
+
+    newStamina = Math.max(0, Math.min(MAX_STAMINA, newStamina));
+    const staminaThreshold = 0.3;
+    const balanceThreshold = 0.2;
+
+    const staminaPercentage = newStamina / MAX_STAMINA;
+    const balancePercentage = newBalance / MAX_BALANCE;
+
+    if (staminaPercentage <= staminaThreshold && newStamina > 0) {
       setStaminaWarning("⚠️ Stamina kamu rendah, pertimbangkan untuk istirahat besok.");
     } else if (newStamina === 0) {
       setStaminaWarning("❌ Stamina habis! Kamu harus istirahat untuk bisa melanjutkan hari.");
     } else {
       setStaminaWarning(null);
     }
-
-    if (newBalance < 300) {
+    
+    if (balancePercentage < balanceThreshold) {
       setBalanceWarning("⚠️ Saldo kamu menipis, hati-hati dalam mengambil pilihan.");
     } else {
       setBalanceWarning(null);
@@ -115,6 +109,7 @@ export default function GameController() {
       balanceAfter: newBalance,
       staminaBefore: stamina,
       staminaAfter: newStamina,
+      salary: getNextSalary(),
     };
 
     setBalance(newBalance);
@@ -125,10 +120,12 @@ export default function GameController() {
     if (workedToday) {
       setWorkDays(workDays + 1);
       useGameStore.getState().setTotalWorkDays(useGameStore.getState().totalWorkDays + 1);
+      const updatedSalary = getNextSalary();
+      setNextSalary(updatedSalary);
     }
 
     if (currentDay >= DAYS_IN_MONTH) {
-      const salary = calculateSalary(workDays);
+      const salary = getNextSalary();
       setBalance((prev: number) => prev + salary);
       updateMaxBalance();
       setPayNotification(`💼 Kamu menerima gaji sebesar $${salary}!`);
@@ -139,6 +136,32 @@ export default function GameController() {
       setCurrentDay(currentDay + 1);
     }
   };
+  
+  useEffect(() => {
+    const categories = Array.from(new Set(dailyOptions.map((opt) => opt.category)));
+    const today: Choice[] = categories.flatMap((cat) =>
+      dailyOptions.filter((opt) => opt.category === cat)
+    );
+  
+    const updatedChoices = today.map((choice) => {
+      let staminaEffect = choice.staminaEffect;
+  
+      if (selectedCharacter) {
+        staminaEffect *= selectedCharacter.staminaModifier;
+      }
+  
+      if (selectedJob) {
+        staminaEffect *= selectedJob.staminaConsumptionModifier;
+      }
+  
+      return {
+        ...choice,
+        staminaEffect,
+      };
+    });
+  
+    setTodayChoices(updatedChoices);
+  }, [currentDay, selectedCharacter, selectedJob]);  
   
   useEffect(() => {
     const timer = setTimeout(() => clearNotifications(), 5000);
@@ -187,6 +210,7 @@ export default function GameController() {
         stamina={stamina}
         maxMonth={MAX_MONTHS}
         maxBalance={MAX_BALANCE}
+        maxStamina={MAX_STAMINA}
         workDays={workDays}
         nextSalary={nextSalary}
         gender={selectedCharacterGender}

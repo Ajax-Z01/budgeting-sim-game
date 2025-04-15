@@ -34,6 +34,7 @@ export type DailyRecord = {
   balanceAfter: number;
   staminaBefore: number;
   staminaAfter: number;
+  salary: number;
 };
 
 export type GameOverReason = "balance" | "stamina" | null;
@@ -42,9 +43,9 @@ export type GameOverReason = "balance" | "stamina" | null;
 
 export type GameState = {
   // Selections
-  selectedCharacter: string | null;
-  selectedCharacterGender: 'male' | 'female';
-  selectedJob: string | null;
+  selectedCharacter: Character | null;
+  selectedJob: Job | null;
+  selectedCharacterGender: 'male' | 'female' | null;
 
   // Data
   characters: Character[];
@@ -69,6 +70,7 @@ export type GameState = {
   MAX_MONTHS: number;
   DAYS_IN_MONTH: number;
   MAX_BALANCE: number;
+  MAX_STAMINA: number;
 
   // Derived state
   nextSalary: number;
@@ -89,14 +91,17 @@ export type GameState = {
   setStaminaWarning: (msg: string | null) => void;
   setBalanceWarning: (msg: string | null) => void;
   setSelectedCharacter: (id: string) => void;
-  setSelectedCharacterGender: (gender: 'male' | 'female') => void;
   setSelectedJob: (id: string) => void;
+  setSelectedCharacterGender: (gender: 'male' | 'female') => void;
+  setNextSalary: (salary: number) => void;
 
   // === Game Logic ===
   selectChoicesForToday: (choices: Choice[]) => void;
   addToHistory: (record: DailyRecord) => void;
   resetWorkDays: () => void;
   calculateSalary: (daysWorked: number) => number;
+  consumeStamina: (amount: number) => number;
+  regenerateStamina: (amount: number) => number;
   updateMaxBalance: () => void;
   clearNotifications: () => void;
   resetGame: () => void;

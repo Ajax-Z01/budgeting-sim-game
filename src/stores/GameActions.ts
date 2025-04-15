@@ -1,10 +1,19 @@
 import { StateCreator } from "zustand";
 import { GameState } from "./GameTypes";
+import { initialCharacters, initialJobs } from "./GameInitialState";
 
 export const createGameActions: StateCreator<GameState, [], [], Partial<GameState>> = (set, get) => ({
-  setSelectedCharacter: (character: string | null) => set({ selectedCharacter: character }),
+  selectedCharacter: null,
+  selectedJob: null,
+  setSelectedCharacter: (id: string) => set((state) => {
+    const character = initialCharacters.find(c => c.id === id) || null;
+    return { selectedCharacter: character };
+  }),
+  setSelectedJob: (id: string) => set((state) => {
+    const job = initialJobs.find(j => j.id === id) || null;
+    return { selectedJob: job };
+  }),
   setSelectedCharacterGender: (gender: 'male' | 'female') => set({ selectedCharacterGender: gender }),
-  setSelectedJob: (job: string | null) => set({ selectedJob: job }),
   setCurrentDay: (day) => set({ currentDay: day }),
   setCurrentMonth: (month) => set({ currentMonth: month }),
   setBalance: (balance) =>
@@ -15,27 +24,13 @@ export const createGameActions: StateCreator<GameState, [], [], Partial<GameStat
   setHistory: (history) => set({ history }),
   setWorkDays: (days) => set({ workDays: days }),
   setTotalWorkDays: (days) => set({ totalWorkDays: days }),
+  setNextSalary: (salary) => set({ nextSalary: salary }),
   setGameOverReason: (reason) => set({ gameOverReason: reason }),
   setPayNotification: (msg) => set({ payNotification: msg }),
   setStaminaWarning: (msg) => set({ staminaWarning: msg }),
   setBalanceWarning: (msg) => set({ balanceWarning: msg }),
   setIsGameOver: (value: boolean) => set({ isGameOver: value }),
-
-  // Fungsi untuk mendapatkan karakter yang dipilih saat ini
-  getCurrentCharacter: () => {
-    const { selectedCharacter, characters } = get();
-    if (!selectedCharacter) return null;
-    return characters.find(char => char.id === selectedCharacter) || null;
-  },
   
-  // Fungsi untuk mendapatkan pekerjaan yang dipilih saat ini
-  getCurrentJob: () => {
-    const { selectedJob, jobs } = get();
-    if (!selectedJob) return null;
-    return jobs.find(job => job.id === selectedJob) || null;
-  },
-  
-  // Inisialisasi game dengan karakter dan pekerjaan yang dipilih
   initializeGameWithChoices: () => {
     const { getCurrentCharacter, getCurrentJob } = get();
     const character = getCurrentCharacter();
@@ -49,6 +44,8 @@ export const createGameActions: StateCreator<GameState, [], [], Partial<GameStat
     set({
       stamina: Math.round(baseStamina * character.staminaModifier),
       balance: Math.round(baseBalance * character.balanceModifier),
+      MAX_STAMINA: Math.round(baseStamina * character.staminaModifier),
+      MAX_BALANCE: Math.round(baseBalance * character.balanceModifier),
       currentDay: 1,
       currentMonth: 1,
       history: [],
@@ -69,7 +66,6 @@ export const createGameActions: StateCreator<GameState, [], [], Partial<GameStat
 
   resetWorkDays: () => set({ workDays: 0 }),
 
-  // Perbarui perhitungan gaji berdasarkan pekerjaan dan karakter
   calculateSalary: (daysWorked) => {
     const { getCurrentJob, getCurrentCharacter } = get();
     const job = getCurrentJob();
@@ -77,34 +73,32 @@ export const createGameActions: StateCreator<GameState, [], [], Partial<GameStat
     
     const baseSalary = 200 * daysWorked;
     const jobModifier = job?.salaryModifier || 1;
-    const characterModifier = character?.id === 'financial' ? 1.1 : 1; // Karakter "Ahli Keuangan" dapat bonus gaji 10%
+    const characterModifier = character?.id === 'financial' ? 1.1 : 1;
     
     return Math.round(baseSalary * jobModifier * characterModifier);
   },
   
-  // Fungsi untuk mengkonsumsi stamina berdasarkan pekerjaan
   consumeStamina: (amount: number) => {
     const { getCurrentJob, setStamina, stamina } = get();
     const job = getCurrentJob();
-    
+  
     const staminaConsumptionModifier = job?.staminaConsumptionModifier || 1;
     const actualAmount = Math.round(amount * staminaConsumptionModifier);
-    
+  
     setStamina(Math.max(0, stamina - actualAmount));
     return actualAmount;
   },
   
-  // Fungsi untuk regenerasi stamina berdasarkan karakter
   regenerateStamina: (amount: number) => {
-    const { getCurrentCharacter, setStamina, stamina } = get();
+    const { getCurrentCharacter, setStamina, stamina, MAX_STAMINA } = get();
     const character = getCurrentCharacter();
-    
+  
     const staminaRegenModifier = character?.staminaRegenModifier || 1;
     const actualAmount = Math.round(amount * staminaRegenModifier);
-    
-    setStamina(Math.min(100, stamina + actualAmount)); // Asumsi max stamina 100
+  
+    setStamina(Math.min(MAX_STAMINA, stamina + actualAmount));
     return actualAmount;
-  },
+  },  
 
   updateMaxBalance: () => {
     const { balance, MAX_BALANCE } = get();
@@ -120,7 +114,6 @@ export const createGameActions: StateCreator<GameState, [], [], Partial<GameStat
       balanceWarning: null,
     }),
 
-  // Fungsi untuk menangani kemampuan spesial pekerjaan
   applySpecialAbility: () => {
     const { getCurrentJob, currentDay, setBalance, balance, setPayNotification } = get();
     const job = getCurrentJob();
@@ -129,10 +122,8 @@ export const createGameActions: StateCreator<GameState, [], [], Partial<GameStat
     
     let abilityTriggered = false;
     
-    // Implementasi kemampuan khusus berdasarkan pekerjaan
     switch (job.id) {
       case 'waiter': 
-        // Pelayan: 20% kesempatan mendapat tip (10-30% dari gaji harian)
         if (Math.random() < 0.2) {
           const tipAmount = Math.round(200 * (0.1 + Math.random() * 0.2));
           setBalance(balance + tipAmount);
@@ -142,7 +133,6 @@ export const createGameActions: StateCreator<GameState, [], [], Partial<GameStat
         break;
         
       case 'freelancer':
-        // Freelancer: 10% kesempatan mendapat proyek besar (3x gaji harian)
         if (Math.random() < 0.1) {
           const bonusAmount = 200 * 3;
           setBalance(balance + bonusAmount);
@@ -152,9 +142,8 @@ export const createGameActions: StateCreator<GameState, [], [], Partial<GameStat
         break;
         
       case 'labor':
-        // Buruh: Setiap minggu (hari ke-7, 14, 21, 28) dapat bonus lembur
         if (currentDay % 7 === 0) {
-          const overtimeAmount = Math.round(200 * 0.5); // 50% dari gaji harian
+          const overtimeAmount = Math.round(200 * 0.5);
           setBalance(balance + overtimeAmount);
           setPayNotification(`Anda mendapat bonus lembur sebesar ${overtimeAmount}!`);
           abilityTriggered = true;
@@ -179,10 +168,10 @@ export const createGameActions: StateCreator<GameState, [], [], Partial<GameStat
       currentMonth,
       applySpecialAbility,
       getCurrentCharacter,
-      getCurrentJob
+      getCurrentJob,
+      getNextSalary
     } = get();
     
-    // Hitung total pengeluaran dan efek stamina dari pilihan
     let totalAmount = 0;
     let totalStaminaEffect = 0;
     
@@ -191,17 +180,14 @@ export const createGameActions: StateCreator<GameState, [], [], Partial<GameStat
       totalStaminaEffect += choice.staminaEffect;
     });
     
-    // Aplikasikan modifikator jika bekerja (staminaEffect negatif berarti bekerja)
     const isWorking = choices.some(choice => choice.staminaEffect < 0);
     
-    // Jika bekerja, aplikasikan modifikator konsumsi stamina dari pekerjaan
     if (isWorking) {
       const job = getCurrentJob();
       if (job) {
         totalStaminaEffect = totalStaminaEffect * job.staminaConsumptionModifier;
       }
     } 
-    // Jika istirahat (staminaEffect positif), aplikasikan modifikator regenerasi stamina
     else if (totalStaminaEffect > 0) {
       const character = getCurrentCharacter();
       if (character) {
@@ -209,7 +195,6 @@ export const createGameActions: StateCreator<GameState, [], [], Partial<GameStat
       }
     }
     
-    // Buat record untuk history
     const record = {
       day: currentDay,
       month: currentMonth,
@@ -218,33 +203,29 @@ export const createGameActions: StateCreator<GameState, [], [], Partial<GameStat
       balanceAfter: balance - totalAmount,
       staminaBefore: stamina,
       staminaAfter: Math.min(100, Math.max(0, stamina + totalStaminaEffect)),
+      salary: getNextSalary(),
     };
     
-    // Update balance dan stamina
     setBalance(balance - totalAmount);
     setStamina(Math.min(100, Math.max(0, stamina + totalStaminaEffect)));
     
-    // Tambahkan ke history
     addToHistory(record);
     
-    // Set choices untuk hari ini
     set({ currentChoices: choices });
     
-    // Cek kemampuan khusus pekerjaan
     applySpecialAbility();
   },
 
   resetGame: () => {
     const { selectedCharacter, selectedJob, initializeGameWithChoices } = get();
     
-    // Tetap mempertahankan karakter dan pekerjaan yang sudah dipilih
     set({
       selectedCharacter,
       selectedJob,
       currentDay: 1,
       currentMonth: 1,
-      balance: 5000,  // Nilai awal akan disesuaikan di initializeGameWithChoices
-      stamina: 100,   // Nilai awal akan disesuaikan di initializeGameWithChoices
+      balance: 5000,
+      stamina: 100,
       history: [],
       workDays: 0,
       totalWorkDays: 0,

@@ -1,6 +1,18 @@
-import { GameState, Character, Job } from "./GameTypes";
+import { GameState, Character, Job, Choice } from "./GameTypes";
 
-const initialCharacters: Character[] = [
+export const dailyOptions: Choice[] = [
+  { category: "Makan", label: "Masak sendiri", amount: 100, staminaEffect: 5 },
+  { category: "Makan", label: "Makan di luar", amount: 300, staminaEffect: 10 },
+  { category: "Transportasi", label: "Tidak keluar", amount: 0, staminaEffect: 0 },
+  { category: "Transportasi", label: "Jalan kaki", amount: 0, staminaEffect: -10 },
+  { category: "Transportasi", label: "Naik motor", amount: 100, staminaEffect: -5 },
+  { category: "Transportasi", label: "Naik taksi", amount: 300, staminaEffect: 5 },
+  { category: "Kegiatan", label: "Istirahat", amount: 0, staminaEffect: 30 },
+  { category: "Kegiatan", label: "Belajar", amount: 0, staminaEffect: -10 },
+  { category: "Kegiatan", label: "Bekerja", amount: 0, staminaEffect: -15 },
+];
+
+export const initialCharacters: Character[] = [
   {
     id: 'hardWorker',
     name: 'Pekerja Keras',
@@ -43,7 +55,7 @@ const initialCharacters: Character[] = [
   }
 ];
 
-const initialJobs: Job[] = [
+export const initialJobs: Job[] = [
   {
     id: 'office',
     name: 'Kantoran',
@@ -86,7 +98,7 @@ const initialJobs: Job[] = [
 
 export const initialState: GameState = {
   selectedCharacter: null,
-  selectedCharacterGender: 'male',
+  selectedCharacterGender: null,
   selectedJob: null,
   
   characters: initialCharacters,
@@ -106,13 +118,11 @@ export const initialState: GameState = {
   MAX_MONTHS: 3,
   DAYS_IN_MONTH: 30,
   MAX_BALANCE: 5000,
+  MAX_STAMINA: 100,
   nextSalary: 0,
   isGameOver: false,
   currentChoices: [],
   
-  setSelectedCharacter: () => {},
-  setSelectedCharacterGender: () => {},
-  setSelectedJob: () => {},
   getCurrentCharacter: () => null,
   getCurrentJob: () => null,
   applySpecialAbility: () => {},
@@ -125,6 +135,9 @@ export const initialState: GameState = {
   getNextSalary: () => 0,
   hasGameStarted: () => false,
   
+  setSelectedCharacter: () => {},
+  setSelectedCharacterGender: () => {},
+  setSelectedJob: () => {},
   selectChoicesForToday: () => {},
   setCurrentDay: () => {},
   setCurrentMonth: () => {},
@@ -132,6 +145,7 @@ export const initialState: GameState = {
   setStamina: () => {},
   setHistory: () => {},
   setWorkDays: () => {},
+  setNextSalary: () => {},
   setTotalWorkDays: () => {},
   setGameOverReason: () => {},
   setIsGameOver: () => {},
@@ -141,6 +155,8 @@ export const initialState: GameState = {
   addToHistory: () => {},
   resetWorkDays: () => {},
   calculateSalary: () => 0,
+  consumeStamina: () => 0,
+  regenerateStamina: () => 0,
   updateMaxBalance: () => {},
   clearNotifications: () => {},
   resetGame: () => {},

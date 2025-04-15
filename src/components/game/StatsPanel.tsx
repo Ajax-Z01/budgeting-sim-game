@@ -12,9 +12,10 @@ type Props = {
   stamina: number;
   maxMonth: number;
   maxBalance: number;
+  maxStamina: number;
   workDays: number;
   nextSalary: number;
-  gender: 'male' | 'female';
+  gender: 'male' | 'female' | null;
 };
 
 function getBarColor(value: number): "green" | "yellow" | "red" {
@@ -31,11 +32,13 @@ export default function StatsPanel({
   stamina,
   maxMonth,
   maxBalance,
+  maxStamina,
   workDays,
   nextSalary,
   gender,
 }: Props) {
   const balancePercent = (balance / maxBalance) * 100;
+  const stamnaPercent = (stamina / maxStamina) * 100;
 
   return (
     <Card className="mb-4">
@@ -51,8 +54,8 @@ export default function StatsPanel({
           <ProgressBar value={balancePercent} color={getBarColor(balancePercent)} />
         </div>
         <div>
-          <span className="font-medium">Stamina:</span> {stamina} / 100
-          <ProgressBar value={stamina} color={getBarColor(stamina)} />
+          <span className="font-medium">Stamina:</span> {stamina} / {maxStamina}
+          <ProgressBar value={stamnaPercent} color={getBarColor(stamina)} />
         </div>
         <div>
           <span className="font-medium">Hari Bekerja:</span> {workDays} hari

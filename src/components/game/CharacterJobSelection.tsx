@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { useGameStore } from "@/stores/GameStore";
-import CharacterAvatar from "./elements/CharacterAvatar"; // Import komponen Avatar
+import CharacterAvatar from "./elements/CharacterAvatar";
 
 interface CharacterJobSelectionProps {
   onStartGame: (character: string, job: string) => void;
@@ -11,35 +11,43 @@ const CharacterJobSelection: React.FC<CharacterJobSelectionProps> = ({ onStartGa
   const jobs = useGameStore(state => state.jobs);
   const setSelectedCharacter = useGameStore(state => state.setSelectedCharacter);
   const setSelectedJob = useGameStore(state => state.setSelectedJob);
-  const setSelectedCharacterGender = useGameStore(state => state.setSelectedCharacterGender); // Use global state for gender
+  const setSelectedCharacterGender = useGameStore(state => state.setSelectedCharacterGender);
+  const initializeGameWithChoices = useGameStore(state => state.initializeGameWithChoices);
 
   const [selectedCharacter, setSelectedCharacterState] = useState<string | null>(null);
   const [selectedJob, setSelectedJobState] = useState<string | null>(null);
 
-  const [stamina, setStamina] = useState<number>(100); // Stamina default value
+  const [stamina, setStamina] = useState<number>(100);
 
-  const [selectedCharacterData, setSelectedCharacterData] = useState<any>(null); // Store selected character data
-  const selectedCharacterGender = useGameStore(state => state.selectedCharacterGender); // Access gender from global state
+  const [selectedCharacterData, setSelectedCharacterData] = useState<any>(null);
+  const selectedCharacterGender = useGameStore(state => state.selectedCharacterGender);
 
+  // Set initial stamina when character is selected
   useEffect(() => {
     if (selectedCharacter) {
       const characterData = characters.find(character => character.id === selectedCharacter);
       setSelectedCharacterData(characterData || null);
       
-      // Adjust stamina based on character's stamina modifier
       if (characterData) {
-        setStamina(100 * characterData.staminaModifier); // Adjust the initial stamina based on the character's modifier
+        setStamina(100 * characterData.staminaModifier);
       }
     }
   }, [selectedCharacter, characters]);
 
-  const handleCharacterChange = useCallback((character: string, gender: 'male' | 'female') => {
-    if (selectedCharacter !== character) {
-      setSelectedCharacterState(character);
-      setSelectedCharacter(character);
+  // Handle gender selection
+  const handleGenderSelect = (gender: 'male' | 'female') => {
+    if (selectedCharacterGender !== gender) {
+      setSelectedCharacterGender(gender);
     }
-    setSelectedCharacterGender(gender); // Selalu update gender
-  }, [selectedCharacter, setSelectedCharacter, setSelectedCharacterGender]);  
+  };
+
+  // Handle character selection
+  const handleCharacterSelect = (characterId: string) => {
+    if (selectedCharacter !== characterId) {
+      setSelectedCharacterState(characterId);
+      setSelectedCharacter(characterId);
+    }
+  };
 
   const handleJobChange = useCallback((job: string) => {
     if (selectedJob !== job) {
@@ -50,6 +58,7 @@ const CharacterJobSelection: React.FC<CharacterJobSelectionProps> = ({ onStartGa
 
   const handleStartGame = () => {
     if (selectedCharacter && selectedJob) {
+      initializeGameWithChoices();
       onStartGame(selectedCharacter, selectedJob);
     } else {
       alert("Please select a character and job.");
@@ -65,16 +74,16 @@ const CharacterJobSelection: React.FC<CharacterJobSelectionProps> = ({ onStartGa
         <h2 className="text-xl text-white mb-3 text-center">Choose Your Gender</h2>
         <div className="flex justify-center gap-6">
           <button
-            onClick={() => handleCharacterChange('male', 'male')}
-            className={`p-4 w-28 h-28 border rounded-full transition transform duration-300 ${selectedCharacter === 'male' ? 'bg-blue-500 text-white scale-105 shadow-lg' : 'bg-gray-600 text-white'} hover:bg-blue-400 hover:scale-105 hover:shadow-xl`}
+            onClick={() => handleGenderSelect('male')}
+            className={`p-4 w-28 h-28 border cursor-pointer rounded-full transition transform duration-300 ${selectedCharacterGender === 'male' ? 'bg-blue-500 text-white scale-105 shadow-lg' : 'bg-gray-600 text-white'} hover:bg-blue-400 hover:scale-105 hover:shadow-xl`}
           >
             <span role="img" aria-label="Male Icon" className="text-4xl">👨‍🦱</span>
             <p className="mt-2 text-sm">Male</p>
           </button>
 
           <button
-            onClick={() => handleCharacterChange('female', 'female')}
-            className={`p-4 w-28 h-28 border rounded-full transition transform duration-300 ${selectedCharacter === 'female' ? 'bg-pink-500 text-white scale-105 shadow-lg' : 'bg-gray-600 text-white'} hover:bg-pink-400 hover:scale-105 hover:shadow-xl`}
+            onClick={() => handleGenderSelect('female')}
+            className={`p-4 w-28 h-28 border cursor-pointer rounded-full transition transform duration-300 ${selectedCharacterGender === 'female' ? 'bg-pink-500 text-white scale-105 shadow-lg' : 'bg-gray-600 text-white'} hover:bg-pink-400 hover:scale-105 hover:shadow-xl`}
           >
             <span role="img" aria-label="Female Icon" className="text-4xl">👩‍🦱</span>
             <p className="mt-2 text-sm">Female</p>
@@ -82,13 +91,13 @@ const CharacterJobSelection: React.FC<CharacterJobSelectionProps> = ({ onStartGa
         </div>
 
         {/* Display avatar after gender selection */}
-        {selectedCharacter && (
+        {selectedCharacterGender && (
           <div className="mt-6 flex justify-center items-center text-center">
             <div className="text-white">
               <p className="text-lg mb-4">Your Selected Gender:</p>
               <div className="flex justify-center items-center">
                 <div className="animate-fade-in">
-                  <CharacterAvatar gender={selectedCharacterGender} stamina={stamina} /> {/* Use selectedCharacterGender */}
+                  <CharacterAvatar gender={selectedCharacterGender} stamina={stamina} />
                 </div>
               </div>
             </div>
@@ -103,8 +112,8 @@ const CharacterJobSelection: React.FC<CharacterJobSelectionProps> = ({ onStartGa
           {characters.map(character => (
             <div key={character.id} className="flex flex-col items-center">
               <button
-                onClick={() => handleCharacterChange(character.id, selectedCharacterGender)}
-                className={`w-full p-4 border rounded-lg ${selectedCharacter === character.id ? 'bg-blue-500 text-white' : 'bg-gray-600 text-white'} hover:bg-blue-400 transition`}
+                onClick={() => handleCharacterSelect(character.id)}
+                className={`w-full p-4 border cursor-pointer rounded-lg ${selectedCharacter === character.id ? 'bg-blue-500 text-white' : 'bg-gray-600 text-white'} hover:bg-blue-400 transition`}
               >
                 {character.name}
               </button>
@@ -116,10 +125,6 @@ const CharacterJobSelection: React.FC<CharacterJobSelectionProps> = ({ onStartGa
           <div className="mt-4 text-white">
             <h3 className="text-lg font-semibold">Character Description:</h3>
             <p>{selectedCharacterData.description}</p>
-            {/* Display additional character modifiers */}
-            <p><strong>Stamina Modifier:</strong> {selectedCharacterData.staminaModifier}</p>
-            <p><strong>Balance Modifier:</strong> {selectedCharacterData.balanceModifier}</p>
-            <p><strong>Stamina Regeneration Modifier:</strong> {selectedCharacterData.staminaRegenModifier}</p>
           </div>
         )}
       </div>
@@ -132,7 +137,7 @@ const CharacterJobSelection: React.FC<CharacterJobSelectionProps> = ({ onStartGa
             <button
               key={job.id}
               onClick={() => handleJobChange(job.id)}
-              className={`w-full p-4 border rounded-lg ${selectedJob === job.id ? 'bg-green-500 text-white' : 'bg-gray-600 text-white'} hover:bg-green-400 transition`}
+              className={`w-full p-4 border cursor-pointer rounded-lg ${selectedJob === job.id ? 'bg-green-500 text-white' : 'bg-gray-600 text-white'} hover:bg-green-400 transition`}
             >
               {job.name}
             </button>
@@ -151,7 +156,7 @@ const CharacterJobSelection: React.FC<CharacterJobSelectionProps> = ({ onStartGa
       <div className="mt-6 text-center">
         <button
           onClick={handleStartGame}
-          className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition duration-300"
+          className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition duration-300 cursor-pointer"
         >
           Start Game
         </button>
