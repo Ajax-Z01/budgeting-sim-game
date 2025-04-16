@@ -3,6 +3,7 @@
 import { Card } from "flowbite-react";
 import ProgressBar from "../ui/ProgressBar";
 import CharacterAvatar from "./elements/CharacterAvatar";
+import { Character, Job } from "@/stores/GameTypes";
 
 type Props = {
   month: number;
@@ -16,6 +17,8 @@ type Props = {
   workDays: number;
   nextSalary: number;
   gender: 'male' | 'female' | null;
+  selectedCharacter: Character | null;
+  selectedJob: Job | null;
 };
 
 function getBarColor(value: number): "green" | "yellow" | "red" {
@@ -36,6 +39,8 @@ export default function StatsPanel({
   workDays,
   nextSalary,
   gender,
+  selectedCharacter,
+  selectedJob,
 }: Props) {
   const balancePercent = (balance / maxBalance) * 100;
   const stamnaPercent = (stamina / maxStamina) * 100;
@@ -64,7 +69,10 @@ export default function StatsPanel({
           <span className="font-medium">Gaji Bulan Ini:</span> ${nextSalary}
         </div>
         <div>
-          <span className="font-medium">Gender:</span> {gender === 'male' ? 'Male' : 'Female'}
+          <span className="font-medium">Karakter:</span> {selectedCharacter?.name || 'Tidak ada karakter'}
+        </div>
+        <div>
+          <span className="font-medium">Pekerjaan:</span> {selectedJob?.name || 'Tidak ada pekerjaan'}
         </div>
       </div>
     </Card>

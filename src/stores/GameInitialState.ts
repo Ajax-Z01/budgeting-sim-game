@@ -103,6 +103,7 @@ export const initialState: GameState = {
   
   characters: initialCharacters,
   jobs: initialJobs,
+  payNotifications: [],
   
   currentDay: 1,
   currentMonth: 1,

@@ -5,6 +5,8 @@ import { initialCharacters, initialJobs } from "./GameInitialState";
 export const createGameActions: StateCreator<GameState, [], [], Partial<GameState>> = (set, get) => ({
   selectedCharacter: null,
   selectedJob: null,
+  payNotifications: [],
+
   setSelectedCharacter: (id: string) => set((state) => {
     const character = initialCharacters.find(c => c.id === id) || null;
     return { selectedCharacter: character };
@@ -26,10 +28,19 @@ export const createGameActions: StateCreator<GameState, [], [], Partial<GameStat
   setTotalWorkDays: (days) => set({ totalWorkDays: days }),
   setNextSalary: (salary) => set({ nextSalary: salary }),
   setGameOverReason: (reason) => set({ gameOverReason: reason }),
-  setPayNotification: (msg) => set({ payNotification: msg }),
+  setPayNotification: (msg: string | null) => {
+    if (msg === null) return;
+    set((state) => ({
+      payNotification: msg,
+      payNotifications: [...state.payNotifications, msg],
+    }));
+  },
+  
+  
   setStaminaWarning: (msg) => set({ staminaWarning: msg }),
   setBalanceWarning: (msg) => set({ balanceWarning: msg }),
   setIsGameOver: (value: boolean) => set({ isGameOver: value }),
+  
   
   initializeGameWithChoices: () => {
     const { getCurrentCharacter, getCurrentJob } = get();
@@ -56,6 +67,7 @@ export const createGameActions: StateCreator<GameState, [], [], Partial<GameStat
       payNotification: null,
       staminaWarning: null,
       balanceWarning: null,
+      payNotifications: [],
     });
   },
 
@@ -112,7 +124,8 @@ export const createGameActions: StateCreator<GameState, [], [], Partial<GameStat
       payNotification: null,
       staminaWarning: null,
       balanceWarning: null,
-    }),
+      payNotifications: [],
+    }),  
 
   applySpecialAbility: () => {
     const { getCurrentJob, currentDay, setBalance, balance, setPayNotification } = get();
@@ -161,40 +174,36 @@ export const createGameActions: StateCreator<GameState, [], [], Partial<GameStat
     const { 
       balance, 
       stamina, 
+      currentDay, 
+      currentMonth, 
       setBalance, 
       setStamina, 
       addToHistory, 
-      currentDay, 
-      currentMonth,
       applySpecialAbility,
-      getCurrentCharacter,
-      getCurrentJob,
-      getNextSalary
+      getNextSalary, 
+      getCurrentCharacter, 
+      getCurrentJob 
     } = get();
-    
+  
+    const selectedCharacter = getCurrentCharacter();
+    const selectedJob = getCurrentJob();
+  
     let totalAmount = 0;
     let totalStaminaEffect = 0;
-    
+  
     choices.forEach(choice => {
       totalAmount += choice.amount;
       totalStaminaEffect += choice.staminaEffect;
     });
-    
+  
     const isWorking = choices.some(choice => choice.staminaEffect < 0);
-    
-    if (isWorking) {
-      const job = getCurrentJob();
-      if (job) {
-        totalStaminaEffect = totalStaminaEffect * job.staminaConsumptionModifier;
-      }
-    } 
-    else if (totalStaminaEffect > 0) {
-      const character = getCurrentCharacter();
-      if (character) {
-        totalStaminaEffect = totalStaminaEffect * character.staminaRegenModifier;
-      }
+  
+    if (isWorking && selectedJob) {
+      totalStaminaEffect = totalStaminaEffect * selectedJob.staminaConsumptionModifier;
+    } else if (totalStaminaEffect > 0 && selectedCharacter) {
+      totalStaminaEffect = totalStaminaEffect * selectedCharacter.staminaRegenModifier;
     }
-    
+  
     const record = {
       day: currentDay,
       month: currentMonth,
@@ -205,14 +214,14 @@ export const createGameActions: StateCreator<GameState, [], [], Partial<GameStat
       staminaAfter: Math.min(100, Math.max(0, stamina + totalStaminaEffect)),
       salary: getNextSalary(),
     };
-    
+  
     setBalance(balance - totalAmount);
     setStamina(Math.min(100, Math.max(0, stamina + totalStaminaEffect)));
-    
+  
     addToHistory(record);
-    
+  
     set({ currentChoices: choices });
-    
+  
     applySpecialAbility();
   },
 
@@ -235,6 +244,7 @@ export const createGameActions: StateCreator<GameState, [], [], Partial<GameStat
       staminaWarning: null,
       balanceWarning: null,
       currentChoices: [],
+      payNotifications: [],
     });
     
     if (selectedCharacter && selectedJob) {

@@ -47,12 +47,15 @@ export default function GameController() {
     setPayNotification,
     setStaminaWarning,
     setBalanceWarning,
+    applySpecialAbility,
   } = useGameStore();
 
   const [todayChoices, setTodayChoices] = useState<Choice[]>([]);
   const nextSalary = useGameStore((state) => state.nextSalary);
+  const payNotifications = useGameStore((state) => state.payNotifications);
   const warningAudioRef = useRef<SoundEffectHandle>(null);
   const salaryAudioRef = useRef<SoundEffectHandle>(null);
+
   const handleConfirmChoices = (selectedChoices: Choice[]) => {
     const totalCost = selectedChoices.reduce((sum, choice) => sum + choice.amount, 0);
     const newBalance = balance - totalCost;
@@ -115,13 +118,14 @@ export default function GameController() {
     setBalance(newBalance);
     setStamina(newStamina);
     addToHistory(record);
-
+    
     const workedToday = selectedChoices.some((choice) => choice.label === "Bekerja");
     if (workedToday) {
       setWorkDays(workDays + 1);
       useGameStore.getState().setTotalWorkDays(useGameStore.getState().totalWorkDays + 1);
       const updatedSalary = getNextSalary();
       setNextSalary(updatedSalary);
+      applySpecialAbility();
     }
 
     if (currentDay >= DAYS_IN_MONTH) {
@@ -191,9 +195,9 @@ export default function GameController() {
   return (
     <div className="mt-6">
       <div className="fixed bottom-4 right-4 space-y-2 z-50">
-        {payNotification && (
-          <ToastNotification message={`💼 ${payNotification}`} type="success" />
-        )}
+        {payNotifications.slice(-10).map((msg, idx) => (
+          <ToastNotification key={idx} message={`💼 ${msg}`} type="success" />
+        ))}
         {staminaWarning && (
           <ToastNotification message={staminaWarning} type="warning" />
         )}
@@ -214,6 +218,8 @@ export default function GameController() {
         workDays={workDays}
         nextSalary={nextSalary}
         gender={selectedCharacterGender}
+        selectedCharacter={selectedCharacter}
+        selectedJob={selectedJob}
       />
 
       <DailyChoices

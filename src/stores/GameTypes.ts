@@ -50,6 +50,7 @@ export type GameState = {
   // Data
   characters: Character[];
   jobs: Job[];
+  payNotifications: string[];
 
   // Progress
   currentDay: number;
