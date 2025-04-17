@@ -1,6 +1,7 @@
 "use client";
 
-import { Card } from "flowbite-react";
+import { Card, Tooltip } from "flowbite-react";
+import { FaWallet, FaHeartbeat, FaCalendarAlt, FaBriefcase, FaUserTie, FaClock } from "react-icons/fa";
 import ProgressBar from "../ui/ProgressBar";
 import CharacterAvatar from "./elements/CharacterAvatar";
 import { Character, Job } from "@/stores/GameTypes";
@@ -43,36 +44,57 @@ export default function StatsPanel({
   selectedJob,
 }: Props) {
   const balancePercent = (balance / maxBalance) * 100;
-  const stamnaPercent = (stamina / maxStamina) * 100;
+  const staminaPercent = (stamina / maxStamina) * 100;
 
   return (
-    <Card className="mb-4">
+    <Card className="mb-4 shadow-md">
       <div className="flex items-center gap-4 mb-4 justify-between">
-        <h2 className="text-xl font-bold">📊 Status Pemain</h2>
+        <h2 className="text-xl font-bold text-white">📊 Status Pemain</h2>
         <CharacterAvatar stamina={stamina} gender={gender} />
       </div>
-      <div className="grid grid-cols-2 gap-4 text-sm">
-        <div><span className="font-medium">Bulan:</span> {month} / {maxMonth}</div>
-        <div><span className="font-medium">Hari:</span> {day} / {days_in_month}</div>
+
+      <div className="grid grid-cols-2 gap-4 text-sm text-white">
+        <div className="flex items-center gap-2">
+          <FaCalendarAlt className="text-blue-500" />
+          <span><span className="font-medium">Bulan:</span> {month} / {maxMonth}</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <FaClock className="text-purple-500" />
+          <span><span className="font-medium">Hari:</span> {day} / {days_in_month}</span>
+        </div>
+
         <div>
-          <span className="font-medium">Saldo:</span> ${balance}
+          <div className="flex items-center gap-2 mb-1">
+            <FaWallet className="text-green-600" />
+            <span className="font-medium">Saldo:</span> ${balance}
+          </div>
           <ProgressBar value={balancePercent} color={getBarColor(balancePercent)} />
         </div>
+
         <div>
-          <span className="font-medium">Stamina:</span> {stamina} / {maxStamina}
-          <ProgressBar value={stamnaPercent} color={getBarColor(stamina)} />
+          <div className="flex items-center gap-2 mb-1">
+            <FaHeartbeat className="text-red-500" />
+            <span className="font-medium">Stamina:</span> {stamina} / {maxStamina}
+          </div>
+          <ProgressBar value={staminaPercent} color={getBarColor(stamina)} />
         </div>
-        <div>
-          <span className="font-medium">Hari Bekerja:</span> {workDays} hari
+
+        <div className="flex items-center gap-2">
+          <FaClock className="text-yellow-500" />
+          <span><span className="font-medium">Hari Bekerja:</span> {workDays} hari</span>
         </div>
-        <div>
-          <span className="font-medium">Gaji Bulan Ini:</span> ${nextSalary}
+        <div className="flex items-center gap-2">
+          <FaWallet className="text-indigo-600" />
+          <span><span className="font-medium">Gaji Bulan Ini:</span> ${nextSalary}</span>
         </div>
-        <div>
-          <span className="font-medium">Karakter:</span> {selectedCharacter?.name || 'Tidak ada karakter'}
+
+        <div className="flex items-center gap-2">
+          <FaUserTie className="text-white" />
+          <span><span className="font-medium">Karakter:</span> {selectedCharacter?.name || 'Tidak ada karakter'}</span>
         </div>
-        <div>
-          <span className="font-medium">Pekerjaan:</span> {selectedJob?.name || 'Tidak ada pekerjaan'}
+        <div className="flex items-center gap-2">
+          <FaBriefcase className="text-cyan-600" />
+          <span><span className="font-medium">Pekerjaan:</span> {selectedJob?.name || 'Tidak ada pekerjaan'}</span>
         </div>
       </div>
     </Card>

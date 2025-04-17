@@ -157,6 +157,8 @@ export default function GameController() {
       if (selectedJob) {
         staminaEffect *= selectedJob.staminaConsumptionModifier;
       }
+      
+      staminaEffect = parseFloat(staminaEffect.toFixed(2));
   
       return {
         ...choice,
@@ -227,6 +229,7 @@ export default function GameController() {
         onChoose={handleConfirmChoices}
         currentStamina={stamina}
       />
+      
       <SoundEffect ref={warningAudioRef} src="/sounds/warning.mp3" />
       <SoundEffect ref={salaryAudioRef} src="/sounds/salary.mp3" />
     </div>

@@ -2,6 +2,17 @@
 
 import React from "react";
 import { useGameStore } from "@/stores/GameStore";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
+import { useTheme } from "next-themes";
 
 export default function FinalReportScreen() {
   const { history, balance, stamina, totalWorkDays } = useGameStore();
@@ -12,58 +23,99 @@ export default function FinalReportScreen() {
     0
   );
 
-  return (
-    <div className="p-6 max-w-3xl mx-auto space-y-6">
-      <h2 className="text-2xl font-bold text-center">📊 Final Report</h2>
+  const chartData = history.map((record) => {
+    const spending = record.choices.reduce((sum, c) => sum + c.amount, 0);
+    return {
+      day: `M${record.month}-D${record.day}`,
+      balance: record.balanceAfter,
+      stamina: record.staminaAfter,
+      spending,
+    };
+  });
 
-      <div className="bg-gray-100 p-4 rounded-lg shadow text-black space-y-1">
+  return (
+    <div className="p-6 w-full mx-auto space-y-8">
+      <h2 className="text-2xl font-bold text-center text-gray-800 dark:text-white">
+        📊 Final Report
+      </h2>
+
+      <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow text-gray-800 dark:text-white space-y-1">
         <p>🧾 <strong>Total Spending:</strong> ${totalSpending}</p>
         <p>💼 <strong>Total Work Days:</strong> {totalWorkDays}</p>
         <p>💰 <strong>Final Balance:</strong> ${balance}</p>
         <p>⚡ <strong>Final Stamina:</strong> {stamina}</p>
       </div>
 
-      <h3 className="text-xl font-semibold mt-6">📅 Daily Breakdown</h3>
-      <div className="space-y-4 text-black">
-        {history.map((record, idx) => (
-          <div
-            key={idx}
-            className="border rounded-lg p-4 shadow bg-white space-y-2"
-          >
-            <p className="font-semibold mb-2">
-              📆 Day {record.day}, Month {record.month}
-            </p>
+      {/* Balance Over Time */}
+      <div className="space-y-4">
+        <h3 className="text-xl font-semibold text-center text-blue-600 dark:text-blue-400">
+          💰 Balance Over Time
+        </h3>
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow text-gray-800 dark:text-white">
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={chartData}>
+              <CartesianGrid className="stroke-gray-300 dark:stroke-gray-600" strokeDasharray="3 3" />
+              <XAxis dataKey="day" className="fill-current text-gray-800 dark:text-white" />
+              <YAxis className="fill-current text-gray-800 dark:text-white" />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "var(--tw-bg-opacity, 1)",
+                }}
+                wrapperClassName="bg-white dark:bg-gray-800 text-gray-800 dark:text-white border border-gray-300 dark:border-gray-600"
+              />
+              <Legend />
+              <Line type="monotone" dataKey="balance" stroke="#3b82f6" name="Balance" />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
 
-            <table className="w-full text-sm text-left border-collapse">
-              <thead>
-                <tr className="border-b">
-                  <th className="py-1">Kategori</th>
-                  <th className="py-1">Aksi</th>
-                  <th className="py-1">Biaya</th>
-                  <th className="py-1">Stamina</th>
-                </tr>
-              </thead>
-              <tbody>
-                {record.choices.map((choice, index) => (
-                  <tr key={index} className="border-t">
-                    <td className="py-1">{choice.category}</td>
-                    <td className="py-1">{choice.label}</td>
-                    <td className="py-1">${choice.amount}</td>
-                    <td className={`py-1 ${choice.staminaEffect < 0 ? "text-red-500" : "text-green-600"}`}>
-                      {choice.staminaEffect > 0 ? "+" : ""}
-                      {choice.staminaEffect}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      {/* Stamina Over Time */}
+      <div className="space-y-4">
+        <h3 className="text-xl font-semibold text-center text-blue-600 dark:text-blue-400">
+          ⚡ Stamina Over Time
+        </h3>
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow text-gray-800 dark:text-white">
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={chartData}>
+              <CartesianGrid className="stroke-gray-300 dark:stroke-gray-600" strokeDasharray="3 3" />
+              <XAxis dataKey="day" className="fill-current text-gray-800 dark:text-white" />
+              <YAxis className="fill-current text-gray-800 dark:text-white" />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "var(--tw-bg-opacity, 1)",
+                }}
+                wrapperClassName="bg-white dark:bg-gray-800 text-gray-800 dark:text-white border border-gray-300 dark:border-gray-600"
+              />
+              <Legend />
+              <Line type="monotone" dataKey="stamina" stroke="#10b981" name="Stamina" />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
 
-            <div className="text-sm text-gray-600 mt-2">
-              💰 Balance: {record.balanceBefore} → {record.balanceAfter}<br />
-              ⚡ Stamina: {record.staminaBefore} → {record.staminaAfter}
-            </div>
-          </div>
-        ))}
+      {/* Daily Spending */}
+      <div className="space-y-4">
+        <h3 className="text-xl font-semibold text-center text-blue-600 dark:text-blue-400">
+          💸 Daily Spending
+        </h3>
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow text-gray-800 dark:text-white">
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={chartData}>
+              <CartesianGrid className="stroke-gray-300 dark:stroke-gray-600" strokeDasharray="3 3" />
+              <XAxis dataKey="day" className="fill-current text-gray-800 dark:text-white" />
+              <YAxis className="fill-current text-gray-800 dark:text-white" />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "var(--tw-bg-opacity, 1)",
+                }}
+                wrapperClassName="bg-white dark:bg-gray-800 text-gray-800 dark:text-white border border-gray-300 dark:border-gray-600"
+              />
+              <Legend />
+              <Line type="monotone" dataKey="spending" stroke="#ef4444" name="Spending" />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
       </div>
     </div>
   );
