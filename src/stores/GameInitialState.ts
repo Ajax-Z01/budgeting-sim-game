@@ -1,4 +1,4 @@
-import { GameState, Character, Job, Choice } from "./GameTypes";
+import { GameState, Character, Job, Choice, GameEvent } from "./GameTypes";
 
 export const dailyOptions: Choice[] = [
   { category: "Makan", label: "Masak sendiri", amount: 100, staminaEffect: 5 },
@@ -94,6 +94,90 @@ export const initialJobs: Job[] = [
     staminaConsumptionModifier: 1.0,
     specialAbility: 'Kesempatan mendapat tip dari pelanggan'
   }
+];
+
+export const randomEvents: GameEvent[] = [
+  {
+    id: "event1",
+    text: "Kamu mendapat traktiran makan siang dari teman lama.",
+    autoEffect: (balance, stamina) => {
+      return { balance: balance, stamina: stamina + 10 };
+    },
+  },
+  {
+    id: "event2",
+    text: "Dompetmu tertinggal di angkot. Kamu kehilangan sebagian uang.",
+    autoEffect: (balance, stamina) => {
+      return { balance: balance - 200, stamina: stamina };
+    },
+  },
+  {
+    id: "event3",
+    text: "Kamu menemukan dompet di jalan. Apa yang kamu lakukan?",
+    choices: [
+      {
+        text: "Kembalikan ke pemiliknya",
+        effect: (balance, stamina) => {
+          return { balance: balance, stamina: stamina + 5 };
+        },
+      },
+      {
+        text: "Ambil uangnya",
+        effect: (balance, stamina) => {
+          return { balance: balance + 200, stamina: stamina - 5 };
+        },
+      },
+    ],
+  },
+  {
+    id: "event4",
+    text: "Hujan deras membuatmu terlambat dan kehujanan.",
+    autoEffect: (balance, stamina) => {
+      return { balance: balance, stamina: stamina - 10 };
+    },
+  },
+  {
+    id: "event5",
+    text: "Kamu memenangkan undian kecil dari minimarket!",
+    autoEffect: (balance, stamina) => {
+      return { balance: balance + 500, stamina: stamina };
+    },
+  },
+  {
+    id: "event6",
+    text: "Kucing tetangga mencuri makananmu.",
+    autoEffect: (balance, stamina) => {
+      return { balance: balance - 100, stamina: stamina - 5 };
+    },
+  },
+  {
+    id: "event7",
+    text: "Kamu mendapat pujian dari atasan atas kerja kerasmu.",
+    autoEffect: (balance, stamina) => {
+      return { balance: balance, stamina: stamina + 15 };
+    },
+  },
+  {
+    id: "event8",
+    text: "Kamu harus memperbaiki ponsel yang jatuh dan rusak.",
+    autoEffect: (balance, stamina) => {
+      return { balance: balance - 500, stamina: stamina };
+    },
+  },
+  {
+    id: "event9",
+    text: "Ada konser musik gratis di taman. Kamu ikut menonton.",
+    autoEffect: (balance, stamina) => {
+      return { balance: balance, stamina: stamina + 10 };
+    },
+  },
+  {
+    id: "event10",
+    text: "Tiba-tiba listrik padam sepanjang malam. Tidurmu terganggu.",
+    autoEffect: (balance, stamina) => {
+      return { balance: balance, stamina: stamina - 10 };
+    },
+  },
 ];
 
 export const initialState: GameState = {

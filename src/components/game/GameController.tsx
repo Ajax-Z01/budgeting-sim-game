@@ -2,14 +2,15 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useGameStore } from "@/stores/GameStore";
-import { Choice, DailyRecord } from "@/stores/GameTypes";
+import { Choice, DailyRecord, GameEvent } from "@/stores/GameTypes";
 import DailyChoices from "./elements/DailyChoices";
 import GameOverScreen from "./screens/GameOverScreen";
 import StatsPanel from "./StatsPanel";
 import ToastNotification from "../ui/ToastNotification";
 import GameFinishedScreen from "./screens/GameFinishedScreen";
 import SoundEffect, { SoundEffectHandle } from "../sound/SoundEffect";
-import { dailyOptions } from "@/stores/GameInitialState";
+import { dailyOptions, randomEvents } from "@/stores/GameInitialState";
+import RandomEvent from "./elements/RandomEvent";
 
 export default function GameController() {
   const {
@@ -51,10 +52,15 @@ export default function GameController() {
   } = useGameStore();
 
   const [todayChoices, setTodayChoices] = useState<Choice[]>([]);
+  const [todayEvent, setTodayEvent] = useState<GameEvent | null>(null);
   const nextSalary = useGameStore((state) => state.nextSalary);
   const payNotifications = useGameStore((state) => state.payNotifications);
   const warningAudioRef = useRef<SoundEffectHandle>(null);
   const salaryAudioRef = useRef<SoundEffectHandle>(null);
+  
+  const handleEventComplete = () => {
+    setTodayEvent(null);
+  };
 
   const handleConfirmChoices = (selectedChoices: Choice[]) => {
     const totalCost = selectedChoices.reduce((sum, choice) => sum + choice.amount, 0);
@@ -127,6 +133,9 @@ export default function GameController() {
       setNextSalary(updatedSalary);
       applySpecialAbility();
     }
+    
+    const randomEvent = randomEvents[Math.floor(Math.random() * randomEvents.length)];
+    setTodayEvent(randomEvent);
 
     if (currentDay >= DAYS_IN_MONTH) {
       const salary = getNextSalary();
@@ -167,7 +176,7 @@ export default function GameController() {
     });
   
     setTodayChoices(updatedChoices);
-  }, [currentDay, selectedCharacter, selectedJob]);  
+  }, [currentDay, selectedCharacter, selectedJob]);
   
   useEffect(() => {
     const timer = setTimeout(() => clearNotifications(), 5000);
@@ -207,7 +216,7 @@ export default function GameController() {
           <ToastNotification message={balanceWarning} type="error" />
         )}
       </div>
-      
+  
       <StatsPanel
         month={currentMonth}
         day={currentDay}
@@ -223,15 +232,21 @@ export default function GameController() {
         selectedCharacter={selectedCharacter}
         selectedJob={selectedJob}
       />
-
-      <DailyChoices
-        choices={todayChoices}
-        onChoose={handleConfirmChoices}
-        currentStamina={stamina}
-      />
-      
+  
+      {todayEvent ? (
+        <div className="mt-4">
+          <RandomEvent event={todayEvent} onEventComplete={handleEventComplete} maxStamina={MAX_STAMINA}/>
+        </div>
+      ) : (
+        <DailyChoices
+          choices={todayChoices}
+          onChoose={handleConfirmChoices}
+          currentStamina={stamina}
+        />
+      )}
+  
       <SoundEffect ref={warningAudioRef} src="/sounds/warning.mp3" />
       <SoundEffect ref={salaryAudioRef} src="/sounds/salary.mp3" />
     </div>
-  );
+  );  
 }

@@ -37,6 +37,17 @@ export type DailyRecord = {
   salary: number;
 };
 
+export type GameEvent = {
+  id: string;
+  text: string;
+  autoEffect?: (balance: number, stamina: number) => { balance: number, stamina: number };
+  choices?: {
+    text: string;
+    effect: (balance: number, stamina: number) => { balance: number, stamina: number };
+  }[];
+};
+
+
 export type GameOverReason = "balance" | "stamina" | null;
 
 // ==== GAME STATE ====

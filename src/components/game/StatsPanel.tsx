@@ -48,9 +48,9 @@ export default function StatsPanel({
 
   return (
     <Card className="mb-4 shadow-md">
-      <div className="flex items-center gap-4 mb-4 justify-between">
-        <h2 className="text-xl font-bold text-white">📊 Status Pemain</h2>
+      <div className="flex items-center gap-4">
         <CharacterAvatar stamina={stamina} gender={gender} />
+        <h2 className="text-xl font-bold text-white">📊 Status Pemain</h2>
       </div>
 
       <div className="grid grid-cols-2 gap-4 text-sm text-white">
