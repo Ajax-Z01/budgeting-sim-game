@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Choice } from "@/stores/GameTypes";
 import SoundEffect, { SoundEffectHandle } from "@/components/sound/SoundEffect";
 import { motion } from "framer-motion";
@@ -17,6 +17,11 @@ export default function DailyChoices({ choices, onChoose, currentStamina }: Dail
 
   const clickSoundRef = useRef<SoundEffectHandle>(null);
   const confirmSoundRef = useRef<SoundEffectHandle>(null);
+  const appearSoundRef = useRef<SoundEffectHandle>(null);
+  
+  useEffect(() => {
+      appearSoundRef.current?.play();
+    }, []);
 
   const getEmoji = (label: string): string => {
     if (label.includes("Masak")) return "🥗";
@@ -81,7 +86,13 @@ export default function DailyChoices({ choices, onChoose, currentStamina }: Dail
   const isStayAtHome = selected["Transportasi"]?.label === "Tidak keluar";
 
   return (
-    <div className="mt-4 space-y-4">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.4 }}
+      className="mt-4 space-y-4"
+    >
       {categories.map((cat) => (
         <div key={cat}>
           <h4 className="font-medium text-lg">{cat}</h4>
@@ -90,11 +101,11 @@ export default function DailyChoices({ choices, onChoose, currentStamina }: Dail
               .filter((c) => c.category === cat)
               .map((choice, idx) => {
                 const isSelected = selected[cat]?.label === choice.label;
-
+  
                 const isChoiceDisabled =
                   (isStayAtHome && cat === "Kegiatan" && choice.label === "Bekerja") ||
                   (isStayAtHome && cat === "Makan" && choice.label === "Makan di luar");
-
+  
                 return (
                   <motion.button
                     key={idx}
@@ -123,7 +134,7 @@ export default function DailyChoices({ choices, onChoose, currentStamina }: Dail
           </div>
         </div>
       ))}
-
+  
       <motion.button
         onClick={handleConfirm}
         whileHover={{ scale: 1.05 }}
@@ -132,9 +143,10 @@ export default function DailyChoices({ choices, onChoose, currentStamina }: Dail
       >
         ✅ Konfirmasi Pilihan Hari Ini
       </motion.button>
-
+  
       <SoundEffect ref={clickSoundRef} src="/sounds/click.mp3" />
       <SoundEffect ref={confirmSoundRef} src="/sounds/confirm.mp3" />
-    </div>
-  );
+      <SoundEffect ref={appearSoundRef} src="/sounds/notif.mp3" />
+    </motion.div>
+  );  
 }

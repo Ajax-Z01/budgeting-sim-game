@@ -116,6 +116,9 @@ export type GameState = {
   regenerateStamina: (amount: number) => number;
   updateMaxBalance: () => void;
   clearNotifications: () => void;
+  usedEventIdsThisMonth: string[];
+  addUsedEventId: (id: string) => void;
+  resetUsedEventIds: () => void;
   resetGame: () => void;
 
   // === Getters & Utilities ===

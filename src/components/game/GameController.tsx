@@ -31,6 +31,9 @@ export default function GameController() {
     payNotification,
     staminaWarning,
     balanceWarning,
+    payNotifications,
+    nextSalary,
+    usedEventIdsThisMonth,
     consumeStamina,
     regenerateStamina,
     getNextSalary,
@@ -49,14 +52,17 @@ export default function GameController() {
     setStaminaWarning,
     setBalanceWarning,
     applySpecialAbility,
+    resetUsedEventIds,
   } = useGameStore();
 
   const [todayChoices, setTodayChoices] = useState<Choice[]>([]);
   const [todayEvent, setTodayEvent] = useState<GameEvent | null>(null);
-  const nextSalary = useGameStore((state) => state.nextSalary);
-  const payNotifications = useGameStore((state) => state.payNotifications);
   const warningAudioRef = useRef<SoundEffectHandle>(null);
   const salaryAudioRef = useRef<SoundEffectHandle>(null);
+  
+  const availableEvents = randomEvents.filter(
+    (event) => !usedEventIdsThisMonth.includes(event.id)
+  );
   
   const handleEventComplete = () => {
     setTodayEvent(null);
@@ -134,8 +140,14 @@ export default function GameController() {
       applySpecialAbility();
     }
     
-    const randomEvent = randomEvents[Math.floor(Math.random() * randomEvents.length)];
-    setTodayEvent(randomEvent);
+    if (availableEvents.length > 0) {
+      const randomEvent =
+        availableEvents[Math.floor(Math.random() * availableEvents.length)];
+      setTodayEvent(randomEvent);
+      useGameStore.getState().addUsedEventId(randomEvent.id);
+    } else {
+      setTodayEvent(null);
+    }
 
     if (currentDay >= DAYS_IN_MONTH) {
       const salary = getNextSalary();
@@ -145,6 +157,7 @@ export default function GameController() {
       resetWorkDays();
       setCurrentDay(1);
       setCurrentMonth(currentMonth + 1);
+      resetUsedEventIds();
     } else {
       setCurrentDay(currentDay + 1);
     }

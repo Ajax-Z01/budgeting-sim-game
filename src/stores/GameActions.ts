@@ -35,12 +35,15 @@ export const createGameActions: StateCreator<GameState, [], [], Partial<GameStat
       payNotifications: [...state.payNotifications, msg],
     }));
   },
-  
-  
   setStaminaWarning: (msg) => set({ staminaWarning: msg }),
   setBalanceWarning: (msg) => set({ balanceWarning: msg }),
   setIsGameOver: (value: boolean) => set({ isGameOver: value }),
-  
+  usedEventIdsThisMonth: [],
+  addUsedEventId: (id) =>
+    set((state) => ({
+      usedEventIdsThisMonth: [...state.usedEventIdsThisMonth, id],
+    })),
+  resetUsedEventIds: () => set({ usedEventIdsThisMonth: [] }),
   
   initializeGameWithChoices: () => {
     const { getCurrentCharacter, getCurrentJob } = get();
