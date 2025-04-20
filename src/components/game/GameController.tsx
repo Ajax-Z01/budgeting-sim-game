@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useGameStore } from "@/stores/GameStore";
-import { Choice, DailyRecord, GameEvent } from "@/stores/GameTypes";
+import { Choice, DailyRecord, GameEvent, GameOverReason } from "@/stores/GameTypes";
 import DailyChoices from "./elements/DailyChoices";
 import GameOverScreen from "./screens/GameOverScreen";
 import StatsPanel from "./StatsPanel";
@@ -67,6 +67,11 @@ export default function GameController() {
   const handleEventComplete = () => {
     setTodayEvent(null);
   };
+  
+  const handleGameOver = (reason: GameOverReason) => {
+    setGameOverReason(reason);
+    useGameStore.getState().setIsGameOver(true);
+  };  
 
   const handleConfirmChoices = (selectedChoices: Choice[]) => {
     const totalCost = selectedChoices.reduce((sum, choice) => sum + choice.amount, 0);
@@ -248,7 +253,7 @@ export default function GameController() {
   
       {todayEvent ? (
         <div className="mt-4">
-          <RandomEvent event={todayEvent} onEventComplete={handleEventComplete} maxStamina={MAX_STAMINA}/>
+          <RandomEvent event={todayEvent} onEventComplete={handleEventComplete} maxStamina={MAX_STAMINA} onGameOver={handleGameOver}/>
         </div>
       ) : (
         <DailyChoices

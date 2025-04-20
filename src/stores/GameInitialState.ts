@@ -1,4 +1,6 @@
+import QuickMath from "@/components/minigame/QuickMath";
 import { GameState, Character, Job, Choice, GameEvent } from "./GameTypes";
+import GuessNumber from "@/components/minigame/GuessNumberGame";
 
 export const dailyOptions: Choice[] = [
   { category: "Makan", label: "Masak sendiri", amount: 100, staminaEffect: 5 },
@@ -404,6 +406,24 @@ export const randomEvents: GameEvent[] = [
       },
     ],
   },
+  {
+    id: "math-event-1",
+    text: "Kamu menemukan dompet berisi uang. Untuk membukanya, kamu harus menjawab teka-teki cepat!",
+    autoEffect: (balance, stamina) => ({
+      balance: balance + 20,
+      stamina: stamina - 5,
+    }),
+    miniGame: QuickMath,
+  },
+  {
+    id: "guess-number-event-1",
+    text: "Kamu menemukan sebuah kotak misterius. Untuk membukanya, kamu harus menebak angka yang tersembunyi di dalam kotak!",
+    autoEffect: (balance, stamina) => ({
+      balance: balance + 30,
+      stamina: stamina - 10,
+    }),
+    miniGame: GuessNumber,
+  }  
 ];
 
 export const initialState: GameState = {

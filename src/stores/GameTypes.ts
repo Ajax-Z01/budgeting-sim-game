@@ -45,8 +45,8 @@ export type GameEvent = {
     text: string;
     effect: (balance: number, stamina: number) => { balance: number, stamina: number };
   }[];
+  miniGame?: React.FC<{ onComplete: (success: boolean) => void }>;
 };
-
 
 export type GameOverReason = "balance" | "stamina" | null;
 
