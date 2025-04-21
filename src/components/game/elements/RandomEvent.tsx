@@ -25,7 +25,7 @@ const RandomEvent: React.FC<RandomEventProps> = ({ event, onEventComplete, maxSt
   }, []);
 
   const handleEventEffect = () => {
-    if (!isEffectApplied) {
+    if (event.miniGame && !isEffectApplied) {
       confirmSoundRef.current?.play();
       onEventComplete();
       return;
@@ -69,9 +69,9 @@ const RandomEvent: React.FC<RandomEventProps> = ({ event, onEventComplete, maxSt
   };
 
   const describeEffect = (effectFn: (balance: number, stamina: number) => { balance: number; stamina: number }): string => {
-    if (!isEffectApplied) {
+    if (event.miniGame && !isEffectApplied) {
       return "Tidak ada efek langsung";
-    }
+    }    
 
     const newState = effectFn(balance, stamina);
     const effects: string[] = [];

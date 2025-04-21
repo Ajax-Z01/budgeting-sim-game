@@ -1,6 +1,7 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useGameStore } from "@/stores/GameStore";
 import CharacterAvatar from "./elements/CharacterAvatar";
+import SoundEffect, { SoundEffectHandle } from "@/components/sound/SoundEffect";
 
 interface CharacterJobSelectionProps {
   onStartGame: (character: string, job: string) => void;
@@ -22,6 +23,9 @@ const CharacterJobSelection: React.FC<CharacterJobSelectionProps> = ({ onStartGa
   const [selectedCharacterData, setSelectedCharacterData] = useState<any>(null);
   const selectedCharacterGender = useGameStore(state => state.selectedCharacterGender);
 
+  const clickSoundRef = useRef<SoundEffectHandle>(null);
+  const startSoundRef = useRef<SoundEffectHandle>(null);
+  
   // Set initial stamina when character is selected
   useEffect(() => {
     if (selectedCharacter) {
@@ -38,6 +42,7 @@ const CharacterJobSelection: React.FC<CharacterJobSelectionProps> = ({ onStartGa
   const handleGenderSelect = (gender: 'male' | 'female') => {
     if (selectedCharacterGender !== gender) {
       setSelectedCharacterGender(gender);
+      clickSoundRef.current?.play();
     }
   };
 
@@ -46,6 +51,7 @@ const CharacterJobSelection: React.FC<CharacterJobSelectionProps> = ({ onStartGa
     if (selectedCharacter !== characterId) {
       setSelectedCharacterState(characterId);
       setSelectedCharacter(characterId);
+      clickSoundRef.current?.play();
     }
   };
 
@@ -53,12 +59,14 @@ const CharacterJobSelection: React.FC<CharacterJobSelectionProps> = ({ onStartGa
     if (selectedJob !== job) {
       setSelectedJobState(job);
       setSelectedJob(job);
+      clickSoundRef.current?.play();
     }
   }, [selectedJob, setSelectedJob]);
 
   const handleStartGame = () => {
     if (selectedCharacter && selectedJob) {
       initializeGameWithChoices();
+      startSoundRef.current?.play()
       onStartGame(selectedCharacter, selectedJob);
     } else {
       alert("Please select a character and job.");
@@ -161,6 +169,9 @@ const CharacterJobSelection: React.FC<CharacterJobSelectionProps> = ({ onStartGa
           Start Game
         </button>
       </div>
+      
+      <SoundEffect ref={clickSoundRef} src="/sounds/click.mp3" />
+      <SoundEffect ref={startSoundRef} src="/sounds/start.mp3" />
     </div>
   );
 };
