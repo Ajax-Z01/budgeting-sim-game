@@ -1,6 +1,7 @@
 import QuickMath from "@/components/minigame/QuickMath";
 import { GameState, Character, Job, Choice, GameEvent } from "./GameTypes";
 import GuessNumber from "@/components/minigame/GuessNumberGame";
+import BasketballGame from "@/components/minigame/BasketballGame";
 
 export const dailyOptions: Choice[] = [
   { category: "Makan", label: "Masak sendiri", amount: 100, staminaEffect: 5 },
@@ -99,313 +100,313 @@ export const initialJobs: Job[] = [
 ];
 
 export const randomEvents: GameEvent[] = [
-  {
-    id: "event1",
-    text: "Kamu mendapat traktiran makan siang dari teman lama.",
-    autoEffect: (balance, stamina) => {
-      return { balance: balance, stamina: stamina + 10 };
-    },
-  },
-  {
-    id: "event2",
-    text: "Dompetmu tertinggal di angkot. Kamu kehilangan sebagian uang.",
-    autoEffect: (balance, stamina) => {
-      return { balance: balance - 200, stamina: stamina };
-    },
-  },
-  {
-    id: "event3",
-    text: "Kamu menemukan dompet di jalan. Apa yang kamu lakukan?",
-    choices: [
-      {
-        text: "Kembalikan ke pemiliknya",
-        effect: (balance, stamina) => {
-          return { balance: balance, stamina: stamina + 5 };
-        },
-      },
-      {
-        text: "Ambil uangnya",
-        effect: (balance, stamina) => {
-          return { balance: balance + 200, stamina: stamina - 5 };
-        },
-      },
-    ],
-  },
-  {
-    id: "event4",
-    text: "Hujan deras membuatmu terlambat dan kehujanan.",
-    autoEffect: (balance, stamina) => {
-      return { balance: balance, stamina: stamina - 10 };
-    },
-  },
-  {
-    id: "event5",
-    text: "Kamu memenangkan undian kecil dari minimarket!",
-    autoEffect: (balance, stamina) => {
-      return { balance: balance + 500, stamina: stamina };
-    },
-  },
-  {
-    id: "event6",
-    text: "Kucing tetangga mencuri makananmu.",
-    autoEffect: (balance, stamina) => {
-      return { balance: balance - 100, stamina: stamina - 5 };
-    },
-  },
-  {
-    id: "event7",
-    text: "Kamu mendapat pujian dari atasan atas kerja kerasmu.",
-    autoEffect: (balance, stamina) => {
-      return { balance: balance, stamina: stamina + 15 };
-    },
-  },
-  {
-    id: "event8",
-    text: "Kamu harus memperbaiki ponsel yang jatuh dan rusak.",
-    autoEffect: (balance, stamina) => {
-      return { balance: balance - 500, stamina: stamina };
-    },
-  },
-  {
-    id: "event9",
-    text: "Ada konser musik gratis di taman. Kamu ikut menonton.",
-    autoEffect: (balance, stamina) => {
-      return { balance: balance, stamina: stamina + 10 };
-    },
-  },
-  {
-    id: "event10",
-    text: "Tiba-tiba listrik padam sepanjang malam. Tidurmu terganggu.",
-    autoEffect: (balance, stamina) => {
-      return { balance: balance, stamina: stamina - 10 };
-    },
-  },
-  {
-    id: "event11",
-    text: "Temanmu mengajakmu ikut lomba desain poster berhadiah.",
-    choices: [
-      {
-        text: "Ikut dan habiskan waktu membuat desain",
-        effect: (balance, stamina) => ({ balance: balance + 300, stamina: stamina - 10 }),
-      },
-      {
-        text: "Tolak, fokus pada pekerjaan rutin",
-        effect: (balance, stamina) => ({ balance, stamina }),
-      },
-    ],
-  },
-  {
-    id: "event12",
-    text: "Sepatumu rusak saat perjalanan.",
-    autoEffect: (balance, stamina) => ({ balance: balance - 150, stamina }),
-  },
-  {
-    id: "event13",
-    text: "Kamu mendapat tugas freelance tak terduga.",
-    choices: [
-      {
-        text: "Ambil dan lembur semalaman",
-        effect: (balance, stamina) => ({ balance: balance + 400, stamina: stamina - 15 }),
-      },
-      {
-        text: "Tolak demi kesehatan",
-        effect: (balance, stamina) => ({ balance, stamina }),
-      },
-    ],
-  },
-  {
-    id: "event14",
-    text: "Kamu menghadiri seminar gratis tentang keuangan.",
-    autoEffect: (balance, stamina) => ({ balance, stamina: stamina + 5 }),
-  },
-  {
-    id: "event15",
-    text: "Kerabatmu pinjam uang untuk kebutuhan mendesak.",
-    choices: [
-      {
-        text: "Pinjamkan uang",
-        effect: (balance, stamina) => ({ balance: balance - 300, stamina }),
-      },
-      {
-        text: "Tolak dengan sopan",
-        effect: (balance, stamina) => ({ balance, stamina: stamina - 3 }),
-      },
-    ],
-  },
-  {
-    id: "event16",
-    text: "Kamu mendapat potongan harga saat belanja bulanan.",
-    autoEffect: (balance, stamina) => ({ balance: balance + 100, stamina }),
-  },
-  {
-    id: "event17",
-    text: "Kamu ikut aksi bersih-bersih lingkungan hari ini.",
-    autoEffect: (balance, stamina) => ({ balance, stamina: stamina - 5 }),
-  },
-  {
-    id: "event18",
-    text: "Paket makananmu salah kirim. Kamu dapat dua kali lipat!",
-    autoEffect: (balance, stamina) => ({ balance, stamina: stamina + 10 }),
-  },
-  {
-    id: "event19",
-    text: "Temanmu mengajak staycation dadakan.",
-    choices: [
-      {
-        text: "Ikut dan refreshing",
-        effect: (balance, stamina) => ({ balance: balance - 300, stamina: stamina + 20 }),
-      },
-      {
-        text: "Tolak dan hemat",
-        effect: (balance, stamina) => ({ balance, stamina }),
-      },
-    ],
-  },
-  {
-    id: "event20",
-    text: "Kamu lupa membawa bekal, harus beli makan di luar.",
-    autoEffect: (balance, stamina) => ({ balance: balance - 50, stamina }),
-  },
-  {
-    id: "event21",
-    text: "Kamu mendapat panggilan wawancara kerja untuk posisi yang lebih baik.",
-    choices: [
-      {
-        text: "Datang dan persiapkan diri",
-        effect: (balance, stamina) => ({ balance, stamina: stamina - 10 }),
-      },
-      {
-        text: "Abaikan, tetap fokus di pekerjaan saat ini",
-        effect: (balance, stamina) => ({ balance, stamina }),
-      },
-    ],
-  },
-  {
-    id: "event22",
-    text: "Temanmu meminta bantuan pinjaman uang.",
-    choices: [
-      {
-        text: "Bantu pinjamkan 300",
-        effect: (balance, stamina) => ({ balance: balance - 300, stamina }),
-      },
-      {
-        text: "Tolak dengan sopan",
-        effect: (balance, stamina) => ({ balance, stamina: stamina - 2 }),
-      },
-    ],
-  },
-  {
-    id: "event23",
-    text: "Kamu melihat promo kursus online dengan diskon besar.",
-    choices: [
-      {
-        text: "Ambil kursus untuk upgrade skill",
-        effect: (balance, stamina) => ({ balance: balance - 250, stamina: stamina - 5 }),
-      },
-      {
-        text: "Tunda dulu, fokus hal lain",
-        effect: (balance, stamina) => ({ balance, stamina }),
-      },
-    ],
-  },
-  {
-    id: "event24",
-    text: "Kamu ditawari proyek freelance kecil.",
-    choices: [
-      {
-        text: "Ambil meskipun waktu istirahat berkurang",
-        effect: (balance, stamina) => ({ balance: balance + 200, stamina: stamina - 10 }),
-      },
-      {
-        text: "Tolak karena sudah lelah",
-        effect: (balance, stamina) => ({ balance, stamina: stamina + 5 }),
-      },
-    ],
-  },
-  {
-    id: "event25",
-    text: "Kamu tertarik beli gadget baru yang kamu incar.",
-    choices: [
-      {
-        text: "Beli sekarang juga",
-        effect: (balance, stamina) => ({ balance: balance - 800, stamina: stamina + 3 }),
-      },
-      {
-        text: "Tunda dulu, belum perlu banget",
-        effect: (balance, stamina) => ({ balance, stamina }),
-      },
-    ],
-  },
-  {
-    id: "event26",
-    text: "Teman ngajak hangout ke luar kota.",
-    choices: [
-      {
-        text: "Ikut, refreshing sejenak",
-        effect: (balance, stamina) => ({ balance: balance - 400, stamina: stamina + 10 }),
-      },
-      {
-        text: "Tolak, hemat dulu",
-        effect: (balance, stamina) => ({ balance, stamina: stamina - 2 }),
-      },
-    ],
-  },
-  {
-    id: "event27",
-    text: "Kamu ikut lomba menulis blog berhadiah.",
-    choices: [
-      {
-        text: "Luangkan waktu untuk ikut",
-        effect: (balance, stamina) => ({ balance, stamina: stamina - 10 }),
-      },
-      {
-        text: "Lewatkan, terlalu sibuk",
-        effect: (balance, stamina) => ({ balance, stamina }),
-      },
-    ],
-  },
-  {
-    id: "event28",
-    text: "Kamu menemukan voucher diskon belanja 50%.",
-    choices: [
-      {
-        text: "Gunakan dan belanja hemat",
-        effect: (balance, stamina) => ({ balance: balance - 150, stamina: stamina + 5 }),
-      },
-      {
-        text: "Abaikan, tidak perlu belanja sekarang",
-        effect: (balance, stamina) => ({ balance, stamina }),
-      },
-    ],
-  },
-  {
-    id: "event29",
-    text: "Terdapat tawaran ikut pelatihan fisik gratis.",
-    choices: [
-      {
-        text: "Ikut untuk jaga stamina",
-        effect: (balance, stamina) => ({ balance, stamina: stamina + 10 }),
-      },
-      {
-        text: "Tidak ikut, tidak ada waktu",
-        effect: (balance, stamina) => ({ balance, stamina: stamina - 5 }),
-      },
-    ],
-  },
-  {
-    id: "event30",
-    text: "Kamu ditawari kerja shift malam dengan bayaran lebih tinggi.",
-    choices: [
-      {
-        text: "Ambil kerja malam",
-        effect: (balance, stamina) => ({ balance: balance + 500, stamina: stamina - 15 }),
-      },
-      {
-        text: "Tolak demi kesehatan",
-        effect: (balance, stamina) => ({ balance, stamina: stamina + 5 }),
-      },
-    ],
-  },
+  // {
+  //   id: "event1",
+  //   text: "Kamu mendapat traktiran makan siang dari teman lama.",
+  //   autoEffect: (balance, stamina) => {
+  //     return { balance: balance, stamina: stamina + 10 };
+  //   },
+  // },
+  // {
+  //   id: "event2",
+  //   text: "Dompetmu tertinggal di angkot. Kamu kehilangan sebagian uang.",
+  //   autoEffect: (balance, stamina) => {
+  //     return { balance: balance - 200, stamina: stamina };
+  //   },
+  // },
+  // {
+  //   id: "event3",
+  //   text: "Kamu menemukan dompet di jalan. Apa yang kamu lakukan?",
+  //   choices: [
+  //     {
+  //       text: "Kembalikan ke pemiliknya",
+  //       effect: (balance, stamina) => {
+  //         return { balance: balance, stamina: stamina + 5 };
+  //       },
+  //     },
+  //     {
+  //       text: "Ambil uangnya",
+  //       effect: (balance, stamina) => {
+  //         return { balance: balance + 200, stamina: stamina - 5 };
+  //       },
+  //     },
+  //   ],
+  // },
+  // {
+  //   id: "event4",
+  //   text: "Hujan deras membuatmu terlambat dan kehujanan.",
+  //   autoEffect: (balance, stamina) => {
+  //     return { balance: balance, stamina: stamina - 10 };
+  //   },
+  // },
+  // {
+  //   id: "event5",
+  //   text: "Kamu memenangkan undian kecil dari minimarket!",
+  //   autoEffect: (balance, stamina) => {
+  //     return { balance: balance + 500, stamina: stamina };
+  //   },
+  // },
+  // {
+  //   id: "event6",
+  //   text: "Kucing tetangga mencuri makananmu.",
+  //   autoEffect: (balance, stamina) => {
+  //     return { balance: balance - 100, stamina: stamina - 5 };
+  //   },
+  // },
+  // {
+  //   id: "event7",
+  //   text: "Kamu mendapat pujian dari atasan atas kerja kerasmu.",
+  //   autoEffect: (balance, stamina) => {
+  //     return { balance: balance, stamina: stamina + 15 };
+  //   },
+  // },
+  // {
+  //   id: "event8",
+  //   text: "Kamu harus memperbaiki ponsel yang jatuh dan rusak.",
+  //   autoEffect: (balance, stamina) => {
+  //     return { balance: balance - 500, stamina: stamina };
+  //   },
+  // },
+  // {
+  //   id: "event9",
+  //   text: "Ada konser musik gratis di taman. Kamu ikut menonton.",
+  //   autoEffect: (balance, stamina) => {
+  //     return { balance: balance, stamina: stamina + 10 };
+  //   },
+  // },
+  // {
+  //   id: "event10",
+  //   text: "Tiba-tiba listrik padam sepanjang malam. Tidurmu terganggu.",
+  //   autoEffect: (balance, stamina) => {
+  //     return { balance: balance, stamina: stamina - 10 };
+  //   },
+  // },
+  // {
+  //   id: "event11",
+  //   text: "Temanmu mengajakmu ikut lomba desain poster berhadiah.",
+  //   choices: [
+  //     {
+  //       text: "Ikut dan habiskan waktu membuat desain",
+  //       effect: (balance, stamina) => ({ balance: balance + 300, stamina: stamina - 10 }),
+  //     },
+  //     {
+  //       text: "Tolak, fokus pada pekerjaan rutin",
+  //       effect: (balance, stamina) => ({ balance, stamina }),
+  //     },
+  //   ],
+  // },
+  // {
+  //   id: "event12",
+  //   text: "Sepatumu rusak saat perjalanan.",
+  //   autoEffect: (balance, stamina) => ({ balance: balance - 150, stamina }),
+  // },
+  // {
+  //   id: "event13",
+  //   text: "Kamu mendapat tugas freelance tak terduga.",
+  //   choices: [
+  //     {
+  //       text: "Ambil dan lembur semalaman",
+  //       effect: (balance, stamina) => ({ balance: balance + 400, stamina: stamina - 15 }),
+  //     },
+  //     {
+  //       text: "Tolak demi kesehatan",
+  //       effect: (balance, stamina) => ({ balance, stamina }),
+  //     },
+  //   ],
+  // },
+  // {
+  //   id: "event14",
+  //   text: "Kamu menghadiri seminar gratis tentang keuangan.",
+  //   autoEffect: (balance, stamina) => ({ balance, stamina: stamina + 5 }),
+  // },
+  // {
+  //   id: "event15",
+  //   text: "Kerabatmu pinjam uang untuk kebutuhan mendesak.",
+  //   choices: [
+  //     {
+  //       text: "Pinjamkan uang",
+  //       effect: (balance, stamina) => ({ balance: balance - 300, stamina }),
+  //     },
+  //     {
+  //       text: "Tolak dengan sopan",
+  //       effect: (balance, stamina) => ({ balance, stamina: stamina - 3 }),
+  //     },
+  //   ],
+  // },
+  // {
+  //   id: "event16",
+  //   text: "Kamu mendapat potongan harga saat belanja bulanan.",
+  //   autoEffect: (balance, stamina) => ({ balance: balance + 100, stamina }),
+  // },
+  // {
+  //   id: "event17",
+  //   text: "Kamu ikut aksi bersih-bersih lingkungan hari ini.",
+  //   autoEffect: (balance, stamina) => ({ balance, stamina: stamina - 5 }),
+  // },
+  // {
+  //   id: "event18",
+  //   text: "Paket makananmu salah kirim. Kamu dapat dua kali lipat!",
+  //   autoEffect: (balance, stamina) => ({ balance, stamina: stamina + 10 }),
+  // },
+  // {
+  //   id: "event19",
+  //   text: "Temanmu mengajak staycation dadakan.",
+  //   choices: [
+  //     {
+  //       text: "Ikut dan refreshing",
+  //       effect: (balance, stamina) => ({ balance: balance - 300, stamina: stamina + 20 }),
+  //     },
+  //     {
+  //       text: "Tolak dan hemat",
+  //       effect: (balance, stamina) => ({ balance, stamina }),
+  //     },
+  //   ],
+  // },
+  // {
+  //   id: "event20",
+  //   text: "Kamu lupa membawa bekal, harus beli makan di luar.",
+  //   autoEffect: (balance, stamina) => ({ balance: balance - 50, stamina }),
+  // },
+  // {
+  //   id: "event21",
+  //   text: "Kamu mendapat panggilan wawancara kerja untuk posisi yang lebih baik.",
+  //   choices: [
+  //     {
+  //       text: "Datang dan persiapkan diri",
+  //       effect: (balance, stamina) => ({ balance, stamina: stamina - 10 }),
+  //     },
+  //     {
+  //       text: "Abaikan, tetap fokus di pekerjaan saat ini",
+  //       effect: (balance, stamina) => ({ balance, stamina }),
+  //     },
+  //   ],
+  // },
+  // {
+  //   id: "event22",
+  //   text: "Temanmu meminta bantuan pinjaman uang.",
+  //   choices: [
+  //     {
+  //       text: "Bantu pinjamkan 300",
+  //       effect: (balance, stamina) => ({ balance: balance - 300, stamina }),
+  //     },
+  //     {
+  //       text: "Tolak dengan sopan",
+  //       effect: (balance, stamina) => ({ balance, stamina: stamina - 2 }),
+  //     },
+  //   ],
+  // },
+  // {
+  //   id: "event23",
+  //   text: "Kamu melihat promo kursus online dengan diskon besar.",
+  //   choices: [
+  //     {
+  //       text: "Ambil kursus untuk upgrade skill",
+  //       effect: (balance, stamina) => ({ balance: balance - 250, stamina: stamina - 5 }),
+  //     },
+  //     {
+  //       text: "Tunda dulu, fokus hal lain",
+  //       effect: (balance, stamina) => ({ balance, stamina }),
+  //     },
+  //   ],
+  // },
+  // {
+  //   id: "event24",
+  //   text: "Kamu ditawari proyek freelance kecil.",
+  //   choices: [
+  //     {
+  //       text: "Ambil meskipun waktu istirahat berkurang",
+  //       effect: (balance, stamina) => ({ balance: balance + 200, stamina: stamina - 10 }),
+  //     },
+  //     {
+  //       text: "Tolak karena sudah lelah",
+  //       effect: (balance, stamina) => ({ balance, stamina: stamina + 5 }),
+  //     },
+  //   ],
+  // },
+  // {
+  //   id: "event25",
+  //   text: "Kamu tertarik beli gadget baru yang kamu incar.",
+  //   choices: [
+  //     {
+  //       text: "Beli sekarang juga",
+  //       effect: (balance, stamina) => ({ balance: balance - 800, stamina: stamina + 3 }),
+  //     },
+  //     {
+  //       text: "Tunda dulu, belum perlu banget",
+  //       effect: (balance, stamina) => ({ balance, stamina }),
+  //     },
+  //   ],
+  // },
+  // {
+  //   id: "event26",
+  //   text: "Teman ngajak hangout ke luar kota.",
+  //   choices: [
+  //     {
+  //       text: "Ikut, refreshing sejenak",
+  //       effect: (balance, stamina) => ({ balance: balance - 400, stamina: stamina + 10 }),
+  //     },
+  //     {
+  //       text: "Tolak, hemat dulu",
+  //       effect: (balance, stamina) => ({ balance, stamina: stamina - 2 }),
+  //     },
+  //   ],
+  // },
+  // {
+  //   id: "event27",
+  //   text: "Kamu ikut lomba menulis blog berhadiah.",
+  //   choices: [
+  //     {
+  //       text: "Luangkan waktu untuk ikut",
+  //       effect: (balance, stamina) => ({ balance, stamina: stamina - 10 }),
+  //     },
+  //     {
+  //       text: "Lewatkan, terlalu sibuk",
+  //       effect: (balance, stamina) => ({ balance, stamina }),
+  //     },
+  //   ],
+  // },
+  // {
+  //   id: "event28",
+  //   text: "Kamu menemukan voucher diskon belanja 50%.",
+  //   choices: [
+  //     {
+  //       text: "Gunakan dan belanja hemat",
+  //       effect: (balance, stamina) => ({ balance: balance - 150, stamina: stamina + 5 }),
+  //     },
+  //     {
+  //       text: "Abaikan, tidak perlu belanja sekarang",
+  //       effect: (balance, stamina) => ({ balance, stamina }),
+  //     },
+  //   ],
+  // },
+  // {
+  //   id: "event29",
+  //   text: "Terdapat tawaran ikut pelatihan fisik gratis.",
+  //   choices: [
+  //     {
+  //       text: "Ikut untuk jaga stamina",
+  //       effect: (balance, stamina) => ({ balance, stamina: stamina + 10 }),
+  //     },
+  //     {
+  //       text: "Tidak ikut, tidak ada waktu",
+  //       effect: (balance, stamina) => ({ balance, stamina: stamina - 5 }),
+  //     },
+  //   ],
+  // },
+  // {
+  //   id: "event30",
+  //   text: "Kamu ditawari kerja shift malam dengan bayaran lebih tinggi.",
+  //   choices: [
+  //     {
+  //       text: "Ambil kerja malam",
+  //       effect: (balance, stamina) => ({ balance: balance + 500, stamina: stamina - 15 }),
+  //     },
+  //     {
+  //       text: "Tolak demi kesehatan",
+  //       effect: (balance, stamina) => ({ balance, stamina: stamina + 5 }),
+  //     },
+  //   ],
+  // },
   {
     id: "math-event-1",
     text: "Kamu menemukan dompet berisi uang. Untuk membukanya, kamu harus menjawab teka-teki cepat!",
@@ -423,6 +424,15 @@ export const randomEvents: GameEvent[] = [
       stamina: stamina - 10,
     }),
     miniGame: GuessNumber,
+  },
+  {
+    id: "basketball-event-1",
+    text: "Ada lomba lempar bola basket berhadiah! Coba keberuntunganmu dengan satu kali lemparan!",
+    autoEffect: (balance, stamina) => ({
+      balance: balance + 100,
+      stamina: stamina - 10,
+    }),
+    miniGame: BasketballGame,
   }  
 ];
 

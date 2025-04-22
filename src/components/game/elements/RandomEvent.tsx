@@ -36,12 +36,12 @@ const RandomEvent: React.FC<RandomEventProps> = ({ event, onEventComplete, maxSt
       const adjustedStamina = Math.min(newState.stamina, maxStamina);
 
       if (newState.balance <= 0) {
-        onGameOver("balance"); // Game over due to negative balance
+        onGameOver("balance");
         return;
       }
 
       if (adjustedStamina <= 0) {
-        onGameOver("stamina"); // Game over due to negative stamina
+        onGameOver("stamina");
         return;
       }
 
@@ -60,17 +60,23 @@ const RandomEvent: React.FC<RandomEventProps> = ({ event, onEventComplete, maxSt
   const handleMiniGameComplete = (success: boolean) => {
     setIsMiniGameComplete(true);
     if (success) {
-      setMiniGameResult("Benar!");
+      setMiniGameResult("Kamu Menang!");
       setIsEffectApplied(true);
     } else {
-      setMiniGameResult("Salah!");
+      setMiniGameResult("Kamu Kalah!");
+      const newStamina = stamina - 10;
+      const adjustedStamina = Math.max(newStamina, 0); 
+
+      useGameStore.setState({
+        stamina: adjustedStamina,
+      });
       setIsEffectApplied(false);
     }
   };
 
   const describeEffect = (effectFn: (balance: number, stamina: number) => { balance: number; stamina: number }): string => {
     if (event.miniGame && !isEffectApplied) {
-      return "Tidak ada efek langsung";
+      return "Stamina -10";
     }    
 
     const newState = effectFn(balance, stamina);
