@@ -4,14 +4,17 @@ Sebuah game simulasi keuangan berbasis web yang mengajak pemain untuk mengelola 
 
 ## 🎮 Fitur Utama
 
-- Simulasi selama **3 bulan**
+- Simulasi selama **3 bulan** dengan 30 hari per bulan.
 - Pilihan harian seperti:
-  - 🍽️ Makan (Masak sendiri / Makan di luar)
-  - 🚶 Transportasi (Jalan kaki / Motor / Taksi / Tidak keluar rumah)
-  - 🛠️ Kegiatan (Bekerja / Belajar / Istirahat)
-- Sistem stamina dan saldo yang saling memengaruhi
-- Catatan riwayat harian (day-by-day history)
-- Mekanisme gaji bulanan berdasarkan jumlah hari bekerja
+  - 🍽️ Makan: Masak sendiri / Makan di luar
+  - 🚶 Transportasi: Jalan kaki / Motor / Taksi / Tidak keluar rumah
+  - 🛠️ Kegiatan: Bekerja / Belajar / Istirahat
+- Sistem stamina dan saldo yang saling memengaruhi.
+- Catatan riwayat harian (day-by-day history).
+- Mekanisme gaji bulanan berdasarkan jumlah hari bekerja.
+- Event acak yang dapat memengaruhi kondisi pemain.
+- Sistem pencapaian berdasarkan performa pemain.
+- Efek suara dan musik latar untuk meningkatkan pengalaman bermain.
 
 ## 📊 Tujuan Game
 
@@ -19,17 +22,19 @@ Pemain diminta untuk bertahan hidup dan mengelola keuangan secara bijak selama 3
 
 ## 🛠️ Tech Stack
 
-- **Next.js + React**
-- **Flowbite React** (UI Component Library)
-- **TypeScript**
-- **Tailwind CSS** (via Flowbite)
+- Next.js + React
+- TypeScript
+- Tailwind CSS (via Flowbite)
+- Flowbite React (UI Component Library)
+- Zustand (State Management)
+- Vercel (Deployment)
 
 ## 🚀 Cara Menjalankan
 
 ```bash
-# 1. Clone repo ini
-git clone https://github.com/Ajax-Z01/budgeting-simulation-game.git
-cd budgeting-simulation-game
+# 1. Clone repositori ini
+git clone https://github.com/Ajax-Z01/budgeting-sim-game.git
+cd budgeting-sim-game
 
 # 2. Install dependencies
 npm install
@@ -38,31 +43,24 @@ npm install
 npm run dev
 ```
 
-Akses di: http://localhost:3000
+Akses di: [http://localhost:3000](http://localhost:3000)
 
-## 🗂️ Struktur Komponen Utama
+## 🗂️ Struktur Proyek
 
-- `game/page.tsx` — Halaman utama game
-- `GameState.tsx` — State global game
-- `GameController.tsx` — Logika dan flow permainan
-- `DailyChoices.tsx` — Komponen pilihan harian
-- `StatsPanel.tsx` — Panel statistik stamina & saldo
-- `GameSummary.tsx` — Ringkasan akhir permainan
+- `pages/game/page.tsx` — Halaman utama game.
+- `components/game/GameController.tsx` — Logika dan alur permainan.
+- `components/game/StatsPanel.tsx` — Panel statistik stamina & saldo.
+- `components/game/elements/DailyChoices.tsx` — Komponen pilihan harian.
+- `components/game/screens/GameOverScreen.tsx` — Layar akhir saat game over.
+- `components/game/screens/GameFinishedScreen.tsx` — Layar akhir saat game selesai.
+- `stores/GameStore.ts` — State global game menggunakan Zustand.
 
 ## 🧠 Tips Bermain
 
 - Pilih strategi hemat dengan tetap menjaga stamina.
 - Istirahat secara rutin untuk menghindari kelelahan.
 - Bekerja penting untuk mendapatkan gaji di akhir bulan!
-
-## 📝 Roadmap (To-Do)
-
-- [x] Simulasi 3 bulan
-- [x] Sistem stamina & pilihan harian
-- [x] Gaji berdasarkan kerja
-- [ ] Sistem event acak (kejutan baik/buruk)
-- [ ] Visualisasi grafik pengeluaran
-- [ ] Sistem leaderboard & pencapaian
+- Perhatikan event acak yang dapat memengaruhi kondisi finansial dan stamina.
 
 ## 🤝 Kontribusi
 

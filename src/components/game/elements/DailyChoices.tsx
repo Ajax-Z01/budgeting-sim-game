@@ -2,26 +2,32 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Choice } from "@/stores/GameTypes";
+import { useGameStore } from "@/stores/GameStore";
 import SoundEffect, { SoundEffectHandle } from "@/components/sound/SoundEffect";
 import { motion } from "framer-motion";
+import ToastNotification from "@/components/ui/ToastNotification";
 
 type DailyChoicesProps = {
   choices: Choice[];
   onChoose: (selectedChoices: Choice[]) => void;
   currentStamina: number;
+  currentDay: number;
 };
 
-export default function DailyChoices({ choices, onChoose, currentStamina }: DailyChoicesProps) {
+export default function DailyChoices({ choices, onChoose, currentStamina, currentDay }: DailyChoicesProps) {
   const categories = Array.from(new Set(choices.map((c) => c.category)));
   const [selected, setSelected] = useState<Record<string, Choice>>({});
+  const { previousChoices, setPreviousChoices } = useGameStore();
+  const [warning, setWarning] = useState<string | null>(null);
 
   const clickSoundRef = useRef<SoundEffectHandle>(null);
   const confirmSoundRef = useRef<SoundEffectHandle>(null);
   const appearSoundRef = useRef<SoundEffectHandle>(null);
-  
+  const warningAudioRef = useRef<SoundEffectHandle>(null);
+
   useEffect(() => {
-      appearSoundRef.current?.play();
-    }, []);
+    appearSoundRef.current?.play();
+  }, []);
 
   const getEmoji = (label: string): string => {
     if (label.includes("Masak")) return "🥗";
@@ -64,23 +70,45 @@ export default function DailyChoices({ choices, onChoose, currentStamina }: Dail
       return updated;
     });
   };
+  
+  useEffect(() => {
+    if (warning) {
+      warningAudioRef.current?.play();
+    }
+  }, [warning]); 
 
   const handleConfirm = () => {
     const selectedChoices = Object.values(selected);
     if (selectedChoices.length !== categories.length) {
-      alert("Pilih satu opsi dari tiap kategori.");
+      setWarning("⚠️ Semua kategori harus dipilih.");
       return;
     }
-
+  
     const totalStaminaChange = selectedChoices.reduce((sum, c) => sum + c.staminaEffect, 0);
     const willBeStamina = currentStamina + totalStaminaChange;
-
+  
     if (willBeStamina <= 0) {
-      console.log("Stamina akan habis, trigger game over dari parent.");
+      setWarning("⚠️ Stamina tidak cukup untuk melakukan kegiatan ini.");
+      return;
     }
-
+  
     confirmSoundRef.current?.play();
     onChoose(selectedChoices);
+    setPreviousChoices(currentDay, selectedChoices);
+    setWarning(null);
+  };
+  
+  const handleSelectPrevious = () => {
+    const prev = previousChoices[currentDay - 1];
+    if (!prev || prev.length === 0) {
+      setWarning("⚠️ Tidak ada pilihan sebelumnya.");
+      return;
+    }
+  
+    setPreviousChoices(currentDay, prev);
+    confirmSoundRef.current?.play();
+    onChoose(prev);
+    setWarning(null);
   };
 
   const isStayAtHome = selected["Transportasi"]?.label === "Tidak keluar";
@@ -93,6 +121,18 @@ export default function DailyChoices({ choices, onChoose, currentStamina }: Dail
       transition={{ duration: 0.4 }}
       className="mt-4 space-y-4"
     >
+      <div className="fixed bottom-4 right-4 space-y-2 z-50">
+        {warning && (
+          <ToastNotification message={warning} type="warning" keyProp={Date.now()} />
+        )}
+      </div>
+      <button
+        onClick={handleSelectPrevious}
+        className="w-full bg-yellow-600 text-white px-4 py-2 rounded-xl hover:bg-yellow-700 transition-all shadow-md cursor-pointer"
+      >
+        🔁 Konfirmasi Pilihan yang Sama Seperti Kemarin
+      </button>
+
       {categories.map((cat) => (
         <div key={cat}>
           <h4 className="font-medium text-lg">{cat}</h4>
@@ -101,11 +141,11 @@ export default function DailyChoices({ choices, onChoose, currentStamina }: Dail
               .filter((c) => c.category === cat)
               .map((choice, idx) => {
                 const isSelected = selected[cat]?.label === choice.label;
-  
+
                 const isChoiceDisabled =
                   (isStayAtHome && cat === "Kegiatan" && choice.label === "Bekerja") ||
                   (isStayAtHome && cat === "Makan" && choice.label === "Makan di luar");
-  
+
                 return (
                   <motion.button
                     key={idx}
@@ -115,8 +155,7 @@ export default function DailyChoices({ choices, onChoose, currentStamina }: Dail
                     whileTap={{ scale: 0.95 }}
                     className={`w-full text-left px-4 py-2 rounded-xl border transition-all duration-200 cursor-pointer
                       ${isSelected ? "bg-green-500 text-white border-green-600 shadow-lg" : "bg-white text-gray-800 border-gray-300"}
-                      ${isChoiceDisabled ? "opacity-40 cursor-not-allowed" : "hover:border-blue-400"}
-                    `}
+                      ${isChoiceDisabled ? "opacity-40 cursor-not-allowed" : "hover:border-blue-400"}`}
                   >
                     <span className="text-lg font-semibold">
                       {getEmoji(choice.label)} {choice.label}
@@ -134,7 +173,7 @@ export default function DailyChoices({ choices, onChoose, currentStamina }: Dail
           </div>
         </div>
       ))}
-  
+
       <motion.button
         onClick={handleConfirm}
         whileHover={{ scale: 1.05 }}
@@ -143,10 +182,11 @@ export default function DailyChoices({ choices, onChoose, currentStamina }: Dail
       >
         ✅ Konfirmasi Pilihan Hari Ini
       </motion.button>
-  
+
       <SoundEffect ref={clickSoundRef} src="/sounds/click.mp3" />
       <SoundEffect ref={confirmSoundRef} src="/sounds/confirm.mp3" />
       <SoundEffect ref={appearSoundRef} src="/sounds/notif.mp3" />
+      <SoundEffect ref={warningAudioRef} src="/sounds/warning.mp3" />
     </motion.div>
-  );  
+  );
 }

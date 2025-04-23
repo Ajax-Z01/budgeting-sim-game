@@ -6,6 +6,14 @@ export const createGameActions: StateCreator<GameState, [], [], Partial<GameStat
   selectedCharacter: null,
   selectedJob: null,
   payNotifications: [],
+  previousChoices: {},
+  setPreviousChoices: (day, choices) =>
+    set((state) => ({
+      previousChoices: {
+        ...state.previousChoices,
+        [day]: choices,
+      },
+    })),
 
   setSelectedCharacter: (id: string) => set((state) => {
     const character = initialCharacters.find(c => c.id === id) || null;
@@ -38,6 +46,7 @@ export const createGameActions: StateCreator<GameState, [], [], Partial<GameStat
   setStaminaWarning: (msg) => set({ staminaWarning: msg }),
   setBalanceWarning: (msg) => set({ balanceWarning: msg }),
   setIsGameOver: (value: boolean) => set({ isGameOver: value }),
+  setIsGameFinish: (value: boolean) => set({ isGameFinish: value }),
   usedEventIdsThisMonth: [],
   addUsedEventId: (id) =>
     set((state) => ({

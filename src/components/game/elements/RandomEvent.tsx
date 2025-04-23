@@ -137,7 +137,7 @@ const RandomEvent: React.FC<RandomEventProps> = ({ event, onEventComplete, maxSt
       )}
 
       {miniGameResult && (
-        <div className={`text-lg font-semibold ${miniGameResult === "Benar!" ? "text-green-500" : "text-red-500"}`}>
+        <div className={`text-lg font-semibold ${miniGameResult === "Kamu Menang!" ? "text-green-500" : "text-red-500"}`}>
           {miniGameResult}
         </div>
       )}

@@ -5,18 +5,21 @@ import { motion } from "framer-motion";
 interface ToastNotificationProps {
   message: string;
   type: "success" | "warning" | "error";
+  keyProp: number;
 }
 
-export default function ToastNotification({ message, type }: ToastNotificationProps) {
+export default function ToastNotification({ message, type, keyProp }: ToastNotificationProps) {
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
+    setVisible(true);
+
     const timer = setTimeout(() => {
       setVisible(false);
     }, 10000);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [keyProp, message]);
 
   const colors = {
     success: "bg-green-100 text-green-800 border-green-300",
@@ -26,6 +29,7 @@ export default function ToastNotification({ message, type }: ToastNotificationPr
 
   return (
     <motion.div
+      key={keyProp}
       initial={{ opacity: 1, scale: 1 }}
       animate={{ opacity: visible ? 1 : 0, scale: visible ? 1 : 0.95 }}
       transition={{ duration: 0.5 }}

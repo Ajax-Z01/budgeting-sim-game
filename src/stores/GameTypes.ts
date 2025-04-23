@@ -62,6 +62,7 @@ export type GameState = {
   characters: Character[];
   jobs: Job[];
   payNotifications: string[];
+  usedEventIdsThisMonth: string[];
 
   // Progress
   currentDay: number;
@@ -87,7 +88,9 @@ export type GameState = {
   // Derived state
   nextSalary: number;
   isGameOver: boolean;
+  isGameFinish: boolean;
   currentChoices: Choice[];
+  previousChoices: Record<number, Choice[]>;
 
   // === Setters ===
   setCurrentDay: (day: number) => void;
@@ -99,6 +102,7 @@ export type GameState = {
   setTotalWorkDays: (days: number) => void;
   setGameOverReason: (reason: GameOverReason) => void;
   setIsGameOver: (value: boolean) => void;
+  setIsGameFinish: (value: boolean) => void;
   setPayNotification: (msg: string | null) => void;
   setStaminaWarning: (msg: string | null) => void;
   setBalanceWarning: (msg: string | null) => void;
@@ -106,6 +110,7 @@ export type GameState = {
   setSelectedJob: (id: string) => void;
   setSelectedCharacterGender: (gender: 'male' | 'female') => void;
   setNextSalary: (salary: number) => void;
+  setPreviousChoices: (day: number, choices: Choice[]) => void;
 
   // === Game Logic ===
   selectChoicesForToday: (choices: Choice[]) => void;
@@ -116,7 +121,6 @@ export type GameState = {
   regenerateStamina: (amount: number) => number;
   updateMaxBalance: () => void;
   clearNotifications: () => void;
-  usedEventIdsThisMonth: string[];
   addUsedEventId: (id: string) => void;
   resetUsedEventIds: () => void;
   resetGame: () => void;

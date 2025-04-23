@@ -27,6 +27,7 @@ export default function GameController() {
     stamina,
     workDays,
     isGameOver,
+    isGameFinish,
     gameOverReason,
     payNotification,
     staminaWarning,
@@ -146,14 +147,13 @@ export default function GameController() {
     }
     
     if (availableEvents.length > 0) {
-      const randomEvent =
-        availableEvents[Math.floor(Math.random() * availableEvents.length)];
+      const randomEvent = availableEvents[Math.floor(Math.random() * availableEvents.length)];
       setTodayEvent(randomEvent);
       useGameStore.getState().addUsedEventId(randomEvent.id);
     } else {
       setTodayEvent(null);
     }
-
+    
     if (currentDay >= DAYS_IN_MONTH) {
       const salary = getNextSalary();
       setBalance((prev: number) => prev + salary);
@@ -213,9 +213,15 @@ export default function GameController() {
     }
   }, [staminaWarning]);
   
-  if (currentMonth > MAX_MONTHS) {
+  useEffect(() => {
+    if (currentMonth > MAX_MONTHS) {
+      useGameStore.getState().setIsGameFinish(true);
+    }
+  }, [currentMonth, MAX_MONTHS]);
+  
+  if (isGameFinish) {
     return <GameFinishedScreen />;
-  }
+  }  
   
   if (isGameOver) {
     return <GameOverScreen reason={gameOverReason} />;
@@ -225,13 +231,13 @@ export default function GameController() {
     <div className="mt-6">
       <div className="fixed bottom-4 right-4 space-y-2 z-50">
         {payNotifications.slice(-10).map((msg, idx) => (
-          <ToastNotification key={idx} message={`💼 ${msg}`} type="success" />
+          <ToastNotification key={idx} message={`💼 ${msg}`} type="success" keyProp={Date.now()} />
         ))}
         {staminaWarning && (
-          <ToastNotification message={staminaWarning} type="warning" />
+          <ToastNotification message={staminaWarning} type="warning" keyProp={Date.now()} />
         )}
         {balanceWarning && (
-          <ToastNotification message={balanceWarning} type="error" />
+          <ToastNotification message={balanceWarning} type="error" keyProp={Date.now()} />
         )}
       </div>
   
@@ -260,6 +266,7 @@ export default function GameController() {
           choices={todayChoices}
           onChoose={handleConfirmChoices}
           currentStamina={stamina}
+          currentDay={currentDay}
         />
       )}
   
