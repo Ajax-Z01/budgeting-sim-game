@@ -4,28 +4,17 @@ import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "flowbite-react";
 
-const narrationText = `Selamat datang di dunia yang tak sederhana.
+const narrationText = `Welcome to a challenging world.
+Every choice has real impact.
+Live the next 3 months on a tight budget.
+Food, transport, work, and rest — choose wisely.
+Will you save or spend?
+Stamina and money matter.
+Think smart.
+Your choices shape your future.
+The game begins.`;
 
-Di sinilah setiap keputusan membawa konsekuensi nyata. 
-Kamu akan hidup selama tiga bulan ke depan dengan anggaran terbatas. 
-Makan, transportasi, pekerjaan, dan istirahat — semuanya harus dipilih dengan hati-hati.
-
-Apakah kamu akan menabung demi masa depan? 
-Atau menghabiskan uang demi kenyamanan sesaat?
-
-Ingat, stamina dan uang adalah segalanya di dunia ini. 
-Pikirkan matang-matang, karena pilihanmu hari ini menentukan hidupmu esok hari.
-
-Sekarang… bersiaplah.
-
-Permainan dimulai.`;
-
-export default function GameNarration({
-  onFinish,
-}: {
-  onFinish: () => void;
-}) {
-  const [started, setStarted] = useState(false);
+export default function GameNarration({ onFinish }: { onFinish: () => void }) {
   const [ended, setEnded] = useState(false);
   const [skipped, setSkipped] = useState(false);
   const [displayedText, setDisplayedText] = useState("");
@@ -34,13 +23,6 @@ export default function GameNarration({
   const indexRef = useRef(0);
   const typingAudioRef = useRef<HTMLAudioElement>(null);
 
-  const handleStart = () => {
-    setStarted(true);
-    audioRef.current?.play().catch((e) => {
-      console.warn("Narration audio blocked:", e);
-    });
-  };
-  
   const handleSkip = () => {
     setSkipped(true);
     setDisplayedText(narrationText);
@@ -48,30 +30,36 @@ export default function GameNarration({
     audioRef.current?.pause();
     audioRef.current!.currentTime = audioRef.current!.duration;
     onFinish();
-  };  
+  };
 
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
+    // Play narration audio
+    audio.play().catch((e) => {
+      console.warn("Narration audio blocked:", e);
+    });
+
+    // Set listener for end of narration
     const handleEnded = () => {
       setEnded(true);
       setTimeout(() => onFinish(), 1000);
     };
-
     audio.addEventListener("ended", handleEnded);
+
     return () => {
       audio.removeEventListener("ended", handleEnded);
     };
   }, [onFinish]);
 
   useEffect(() => {
-    if (!started || skipped) return;
-  
+    if (skipped) return;
+
     const interval = setInterval(() => {
       const currentChar = narrationText[indexRef.current];
       setDisplayedText((prev) => prev + currentChar);
-  
+
       if (
         currentChar !== " " &&
         currentChar !== "\n" &&
@@ -81,16 +69,16 @@ export default function GameNarration({
         clone.volume = 0.1;
         clone.play().catch(() => {});
       }
-  
+
       indexRef.current++;
-  
+
       if (indexRef.current >= narrationText.length) {
         clearInterval(interval);
       }
-    }, 75);
-  
+    }, 80);
+
     return () => clearInterval(interval);
-  }, [started, skipped]);
+  }, [skipped]);
 
   return (
     <AnimatePresence>
@@ -102,41 +90,23 @@ export default function GameNarration({
           exit={{ opacity: 0 }}
           className="fixed inset-0 bg-black bg-opacity-90 text-white flex flex-col items-center justify-center z-50 p-6"
         >
-          {!started ? (
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.3 }}
-              className="text-center flex flex-col items-center justify-center gap-4"
-            >
-              <h2 className="text-2xl font-semibold mb-4">🎙️ Narasi Pembuka</h2>
-              <Button
-                onClick={handleStart}
-                className="px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded text-lg transition cursor-pointer"
-              >
-                Mulai Narasi
-              </Button>
-            </motion.div>
-          ) : (
-            <>
-                <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.1, duration: 1 }}
-                className="text-lg text-center max-w-2xl leading-relaxed whitespace-pre-line font-mono"
-                >
-                {displayedText}
-                </motion.p>
-                <Button color="red"
-                    onClick={handleSkip}
-                    className="mt-8 px-4 py-2 rounded text-sm transition cursor-pointer"
-                    >
-                    Skip
-                </Button>
-            </>
-          )}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.1, duration: 1 }}
+            className="text-lg text-center max-w-2xl leading-relaxed whitespace-pre-line font-mono"
+          >
+            {displayedText}
+          </motion.p>
+          <Button
+            color="red"
+            onClick={handleSkip}
+            className="mt-8 px-4 py-2 rounded text-sm transition cursor-pointer"
+          >
+            Skip
+          </Button>
 
-          <audio ref={audioRef} src="/sounds/narration-indo.mp3" />
+          <audio ref={audioRef} src="/sounds/narration.mp3" />
           <audio ref={typingAudioRef} src="/sounds/typing.mp3" preload="auto" />
         </motion.div>
       )}

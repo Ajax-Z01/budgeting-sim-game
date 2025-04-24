@@ -60,10 +60,10 @@ const RandomEvent: React.FC<RandomEventProps> = ({ event, onEventComplete, maxSt
   const handleMiniGameComplete = (success: boolean) => {
     setIsMiniGameComplete(true);
     if (success) {
-      setMiniGameResult("Kamu Menang!");
+      setMiniGameResult("Yout Win!");
       setIsEffectApplied(true);
     } else {
-      setMiniGameResult("Kamu Kalah!");
+      setMiniGameResult("You Lose!");
       const newStamina = stamina - 10;
       const adjustedStamina = Math.max(newStamina, 0); 
 
@@ -87,7 +87,7 @@ const RandomEvent: React.FC<RandomEventProps> = ({ event, onEventComplete, maxSt
       const diff = adjustedStamina - stamina;
       effects.push(`Stamina ${diff > 0 ? "+" : ""}${diff}`);
     } else if (adjustedStamina === maxStamina && newState.stamina > stamina) {
-      effects.push("Stamina sudah penuh, tetapi ada tambahan efek.");
+      effects.push("Stamina Full, maxed out");
     }
 
     if (newState.balance !== balance) {
@@ -95,7 +95,7 @@ const RandomEvent: React.FC<RandomEventProps> = ({ event, onEventComplete, maxSt
       effects.push(`Saldo ${diff > 0 ? "+" : ""}${diff}`);
     }
 
-    return effects.length > 0 ? effects.join(", ") : "Tidak ada efek langsung";
+    return effects.length > 0 ? effects.join(", ") : "Nothing changed";
   };
 
   const handleChoiceClick = (choiceEffect: (balance: number, stamina: number) => { balance: number; stamina: number }) => {
@@ -137,7 +137,7 @@ const RandomEvent: React.FC<RandomEventProps> = ({ event, onEventComplete, maxSt
       )}
 
       {miniGameResult && (
-        <div className={`text-lg font-semibold ${miniGameResult === "Kamu Menang!" ? "text-green-500" : "text-red-500"}`}>
+        <div className={`text-lg font-semibold ${miniGameResult === "Yout Win!" ? "text-green-500" : "text-red-500"}`}>
           {miniGameResult}
         </div>
       )}
@@ -152,7 +152,7 @@ const RandomEvent: React.FC<RandomEventProps> = ({ event, onEventComplete, maxSt
             >
               <span className="block">{choice.text}</span>
               <span className="text-sm text-gray-700">
-                Efek: {describeEffect(choice.effect)}
+                Effect: {describeEffect(choice.effect)}
               </span>
             </button>
           ))}
@@ -160,13 +160,13 @@ const RandomEvent: React.FC<RandomEventProps> = ({ event, onEventComplete, maxSt
           {!event.choices && event.autoEffect && (
             <>
               <div className="text-sm text-gray-700">
-                Efek: {describeEffect(event.autoEffect)}
+                Effect: {describeEffect(event.autoEffect)}
               </div>
               <button
                 className="bg-green-300 hover:bg-green-400 text-black px-4 py-2 rounded mt-2 cursor-pointer"
                 onClick={handleEventEffect}
               >
-                Selesaikan Event
+                Finish Event
               </button>
             </>
           )}

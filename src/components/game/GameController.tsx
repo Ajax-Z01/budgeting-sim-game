@@ -97,18 +97,18 @@ export default function GameController() {
     const balancePercentage = newBalance / MAX_BALANCE;
 
     if (staminaPercentage <= staminaThreshold && newStamina > 0) {
-      setStaminaWarning("⚠️ Stamina kamu rendah, pertimbangkan untuk istirahat besok.");
+      setStaminaWarning("⚠️ Your stamina is low, consider resting tomorrow.");
     } else if (newStamina === 0) {
-      setStaminaWarning("❌ Stamina habis! Kamu harus istirahat untuk bisa melanjutkan hari.");
+      setStaminaWarning("❌ Stamina depleted! You must rest to continue the day.");
     } else {
       setStaminaWarning(null);
     }
     
     if (balancePercentage < balanceThreshold) {
-      setBalanceWarning("⚠️ Saldo kamu menipis, hati-hati dalam mengambil pilihan.");
+      setBalanceWarning("⚠️ Your balance is low, be careful with your choices.");
     } else {
       setBalanceWarning(null);
-    }
+    }    
 
     if (newBalance <= 0) {
       setGameOverReason("balance");

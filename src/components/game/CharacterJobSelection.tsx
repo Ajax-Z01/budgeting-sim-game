@@ -72,7 +72,7 @@ const CharacterJobSelection: React.FC<CharacterJobSelectionProps> = ({ onStartGa
       startSoundRef.current?.play()
       onStartGame(selectedCharacter, selectedJob);
     } else {
-      setWarning("⚠️ Silahkan pilih karakter dan pekerjaan.");
+      setWarning("⚠️ Please select a character and a job.");
     }
   };
   

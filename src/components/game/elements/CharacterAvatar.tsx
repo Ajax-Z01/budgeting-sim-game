@@ -18,7 +18,7 @@ export default function CharacterAvatar({ gender, stamina }: Props) {
   return (
     <div className="w-20 h-20 animate-fade-in">
         <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.4 }}>
-            <Image src={avatar} alt="Avatar Karakter" width={128} height={128} className="rounded-full border-4 border-white"/>
+            <Image src={avatar} alt="Avatar" width={128} height={128} className="rounded-full border-4 border-white"/>
         </motion.div>
     </div>
   );

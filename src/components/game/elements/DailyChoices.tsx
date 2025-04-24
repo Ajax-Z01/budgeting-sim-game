@@ -30,13 +30,14 @@ export default function DailyChoices({ choices, onChoose, currentStamina, curren
   }, []);
 
   const getEmoji = (label: string): string => {
-    if (label.includes("Masak")) return "🥗";
-    if (label.includes("Makan di luar")) return "🍔";
-    if (label.includes("Tidak keluar")) return "🏠";
-    if (label.includes("Jalan kaki")) return "🚶";
-    if (label.includes("Naik kendaraan")) return "🚌";
-    if (label.includes("Belajar")) return "📚";
-    if (label.includes("Bekerja")) return "💼";
+    if (label.includes("Cook at home")) return "🥗";
+    if (label.includes("Eat out")) return "🍔";
+    if (label.includes("Stay at home")) return "🏠";
+    if (label.includes("Walk")) return "🚶";
+    if (label.includes("Ride bike")) return "🏍️";
+    if (label.includes("Take taxi")) return "🚕";
+    if (label.includes("Work")) return "💼";
+    if (label.includes("Rest")) return "😴";
     return "🎯";
   };
 
@@ -54,17 +55,17 @@ export default function DailyChoices({ choices, onChoose, currentStamina, curren
     setSelected((prev) => {
       const updated = { ...prev, [choice.category]: choice };
 
-      if (choice.category === "Transportasi" && choice.label === "Tidak keluar rumah") {
-        if (updated["Kegiatan"]?.label === "Bekerja") delete updated["Kegiatan"];
-        if (updated["Makan"]?.label === "Makan di luar") delete updated["Makan"];
+      if (choice.category === "Transport" && choice.label === "Stay at home") {
+        if (updated["Activity"]?.label === "Work") delete updated["Activity"];
+        if (updated["Food"]?.label === "Eat out") delete updated["Food"];
       }
 
-      if (choice.category === "Kegiatan" && choice.label === "Bekerja") {
-        if (updated["Transportasi"]?.label === "Tidak keluar rumah") delete updated["Transportasi"];
+      if (choice.category === "Activity" && choice.label === "Work") {
+        if (updated["Transport"]?.label === "Stay at home") delete updated["Transport"];
       }
 
-      if (choice.category === "Makan" && choice.label === "Makan di luar") {
-        if (updated["Transportasi"]?.label === "Tidak keluar rumah") delete updated["Transportasi"];
+      if (choice.category === "Food" && choice.label === "Eat out") {
+        if (updated["Transport"]?.label === "Stay at home") delete updated["Transport"];
       }
 
       return updated;
@@ -80,7 +81,7 @@ export default function DailyChoices({ choices, onChoose, currentStamina, curren
   const handleConfirm = () => {
     const selectedChoices = Object.values(selected);
     if (selectedChoices.length !== categories.length) {
-      setWarning("⚠️ Semua kategori harus dipilih.");
+      setWarning("⚠️ All categories must be selected.");
       return;
     }
   
@@ -88,7 +89,7 @@ export default function DailyChoices({ choices, onChoose, currentStamina, curren
     const willBeStamina = currentStamina + totalStaminaChange;
   
     if (willBeStamina <= 0) {
-      setWarning("⚠️ Stamina tidak cukup untuk melakukan kegiatan ini.");
+      setWarning("⚠️ Not enough stamina to perform these activities.");
       return;
     }
   
@@ -101,7 +102,7 @@ export default function DailyChoices({ choices, onChoose, currentStamina, curren
   const handleSelectPrevious = () => {
     const prev = previousChoices[currentDay - 1];
     if (!prev || prev.length === 0) {
-      setWarning("⚠️ Tidak ada pilihan sebelumnya.");
+      setWarning("⚠️ No previous choices available.");
       return;
     }
   
@@ -111,7 +112,7 @@ export default function DailyChoices({ choices, onChoose, currentStamina, curren
     setWarning(null);
   };
 
-  const isStayAtHome = selected["Transportasi"]?.label === "Tidak keluar";
+  const isStayAtHome = selected["Transport"]?.label === "Stay at home";
 
   return (
     <motion.div
@@ -130,7 +131,7 @@ export default function DailyChoices({ choices, onChoose, currentStamina, curren
         onClick={handleSelectPrevious}
         className="w-full bg-yellow-600 text-white px-4 py-2 rounded-xl hover:bg-yellow-700 transition-all shadow-md cursor-pointer"
       >
-        🔁 Konfirmasi Pilihan yang Sama Seperti Kemarin
+        🔁 Repeat the Same Choices as Yesterday
       </button>
 
       {categories.map((cat) => (
@@ -143,8 +144,8 @@ export default function DailyChoices({ choices, onChoose, currentStamina, curren
                 const isSelected = selected[cat]?.label === choice.label;
 
                 const isChoiceDisabled =
-                  (isStayAtHome && cat === "Kegiatan" && choice.label === "Bekerja") ||
-                  (isStayAtHome && cat === "Makan" && choice.label === "Makan di luar");
+                  (isStayAtHome && cat === "Activity" && choice.label === "Work") ||
+                  (isStayAtHome && cat === "Food" && choice.label === "Eat out");
 
                 return (
                   <motion.button
@@ -180,7 +181,7 @@ export default function DailyChoices({ choices, onChoose, currentStamina, curren
         whileTap={{ scale: 0.95 }}
         className="mt-4 w-full bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 transition-all shadow-md cursor-pointer"
       >
-        ✅ Konfirmasi Pilihan Hari Ini
+        ✅ Confirm Today’s Choices
       </motion.button>
 
       <SoundEffect ref={clickSoundRef} src="/sounds/click.mp3" />

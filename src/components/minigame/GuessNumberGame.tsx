@@ -34,7 +34,7 @@ const GuessNumber: React.FC<GuessNumberProps> = ({ onComplete }) => {
 
   return (
     <div className="p-4 bg-gray-800 rounded-lg shadow">
-      <p className="font-bold text-lg mb-2">Tebak angka antara 1 dan 5:</p>
+      <p className="font-bold text-lg mb-2">Guess a number between 1 and 5:</p>
       <div className="grid grid-cols-5 gap-2 mb-2">
         {Array.from({ length: 5 }, (_, index) => (
           <button
@@ -46,7 +46,7 @@ const GuessNumber: React.FC<GuessNumberProps> = ({ onComplete }) => {
           </button>
         ))}
       </div>
-      <p className="mt-2 text-sm text-gray-200">Sisa waktu: {timeLeft} detik</p>
+      <p className="mt-2 text-sm text-gray-200">Time left: {timeLeft} seconds</p>
     </div>
   );
 };

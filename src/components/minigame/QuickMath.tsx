@@ -35,15 +35,15 @@ const QuickMath: React.FC<QuickMathProps> = ({ onComplete }) => {
 
   return (
     <div className="p-4 bg-gray-800 rounded-lg shadow">
-      <p className="font-bold text-lg mb-2">Berapa hasil dari {a} + {b}?</p>
+      <p className="font-bold text-lg mb-2">What is the result of {a} + {b}?</p>
       <input
         type="number"
         value={answer}
         onChange={(e) => setAnswer(e.target.value)}
         className="border px-2 py-1 mr-2"
       />
-      <button onClick={checkAnswer} className="bg-blue-400 text-white px-3 py-1 rounded">Jawab</button>
-      <p className="mt-2 text-sm text-gray-200">Sisa waktu: {timeLeft} detik</p>
+      <button onClick={checkAnswer} className="bg-blue-400 text-white px-3 py-1 rounded">Answer</button>
+      <p className="mt-2 text-sm text-gray-200">Time left: {timeLeft} seconds</p>
     </div>
   );
 };
