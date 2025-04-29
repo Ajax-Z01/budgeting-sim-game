@@ -1,24 +1,24 @@
 # 💸 Budgeting Simulation Game
 
-Sebuah game simulasi keuangan berbasis web yang mengajak pemain untuk mengelola uang dan stamina dalam kehidupan sehari-hari selama 3 bulan. Pemain harus membuat keputusan harian terkait makan, transportasi, dan aktivitas seperti bekerja, belajar, atau istirahat.
+A web-based financial simulation game where players manage their money and stamina in daily life over the course of 3 months. Players must make daily decisions regarding meals, transportation, and activities such as working, studying, or resting.
 
-## 🎮 Fitur Utama
+## 🎮 Key Features
 
-- Simulasi selama **3 bulan** dengan 30 hari per bulan.
-- Pilihan harian seperti:
-  - 🍽️ Makan: Masak sendiri / Makan di luar
-  - 🚶 Transportasi: Jalan kaki / Motor / Taksi / Tidak keluar rumah
-  - 🛠️ Kegiatan: Bekerja / Belajar / Istirahat
-- Sistem stamina dan saldo yang saling memengaruhi.
-- Catatan riwayat harian (day-by-day history).
-- Mekanisme gaji bulanan berdasarkan jumlah hari bekerja.
-- Event acak yang dapat memengaruhi kondisi pemain.
-- Sistem pencapaian berdasarkan performa pemain.
-- Efek suara dan musik latar untuk meningkatkan pengalaman bermain.
+- **3 months** of simulation with 30 days per month.
+- Daily choices such as:
+  - 🍽️ Meals: Cook at home / Eat out
+  - 🚶 Transportation: Walk / Motorcycle / Taxi / Stay home
+  - 🛠️ Activities: Work / Rest
+- Stamina and balance system that affects each other.
+- Daily history log (day-by-day).
+- Monthly salary mechanism based on the number of workdays.
+- Random events that may affect the player's condition.
+- Achievement system based on player performance.
+- Sound effects and background music to enhance the gameplay experience.
 
-## 📊 Tujuan Game
+## 📊 Game Objective
 
-Pemain diminta untuk bertahan hidup dan mengelola keuangan secara bijak selama 3 bulan. Keseimbangan antara stamina dan pengeluaran menjadi kunci agar tidak kehabisan uang atau kelelahan.
+The player is tasked with surviving and managing finances wisely for 3 months. Balancing stamina and expenses is key to avoid running out of money or becoming too tired.
 
 ## 🛠️ Tech Stack
 
@@ -29,39 +29,39 @@ Pemain diminta untuk bertahan hidup dan mengelola keuangan secara bijak selama 3
 - Zustand (State Management)
 - Vercel (Deployment)
 
-## 🚀 Cara Menjalankan
+## 🚀 How to Run
 
 ```bash
-# 1. Clone repositori ini
+# 1. Clone this repository
 git clone https://github.com/Ajax-Z01/budgeting-sim-game.git
 cd budgeting-sim-game
 
 # 2. Install dependencies
 npm install
 
-# 3. Jalankan secara lokal
+# 3. Run locally
 npm run dev
 ```
 
-Akses di: [http://localhost:3000](http://localhost:3000)
+Access it at: [http://localhost:3000](http://localhost:3000)
 
-## 🗂️ Struktur Proyek
+## 🗂️ Project Structure
 
-- `pages/game/page.tsx` — Halaman utama game.
-- `components/game/GameController.tsx` — Logika dan alur permainan.
-- `components/game/StatsPanel.tsx` — Panel statistik stamina & saldo.
-- `components/game/elements/DailyChoices.tsx` — Komponen pilihan harian.
-- `components/game/screens/GameOverScreen.tsx` — Layar akhir saat game over.
-- `components/game/screens/GameFinishedScreen.tsx` — Layar akhir saat game selesai.
-- `stores/GameStore.ts` — State global game menggunakan Zustand.
+- `pages/game/page.tsx` — Main game page.
+- `components/game/GameController.tsx` — Game logic and flow.
+- `components/game/StatsPanel.tsx` — Stamina & balance stats panel.
+- `components/game/elements/DailyChoices.tsx` — Daily choices component.
+- `components/game/screens/GameOverScreen.tsx` — Game over screen.
+- `components/game/screens/GameFinishedScreen.tsx` — Game finished screen.
+- `stores/GameStore.ts` — Global game state using Zustand.
 
-## 🧠 Tips Bermain
+## 🧠 Gameplay Tips
 
-- Pilih strategi hemat dengan tetap menjaga stamina.
-- Istirahat secara rutin untuk menghindari kelelahan.
-- Bekerja penting untuk mendapatkan gaji di akhir bulan!
-- Perhatikan event acak yang dapat memengaruhi kondisi finansial dan stamina.
+- Choose a frugal strategy while maintaining stamina.
+- Rest regularly to avoid exhaustion.
+- Working is crucial to earn a salary at the end of the month!
+- Pay attention to random events that may affect your financial and stamina status.
 
-## 🤝 Kontribusi
+## 🤝 Contributing
 
-Pull request dan saran sangat diterima! 💬
+Pull requests and suggestions are welcome! 💬
